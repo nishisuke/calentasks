@@ -8,5 +8,34 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^4.2.2",
+    "html-webpack-plugin": "^4.4.1",
+    "husky": ">=4",
+    "lint-staged": ">=10",
+    "mini-css-extract-plugin": "^0.11.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
+    "prettier": "^2.1.1",
+    "ts-loader": "^8.0.3",
+    "typescript": "^4.0.2",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
+  }
 }

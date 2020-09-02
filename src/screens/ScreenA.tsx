@@ -36,7 +36,7 @@ interface M {
 
 const getLastDate = (y: number, m: number) => new Date(y, m, 0).getDate()
 
-const getWeeks = (startDate: Date) => {
+const getWeeks = (startDate: Date, limit: number) => {
   const year = startDate.getFullYear()
   const month = startDate.getMonth() + 1
   const prevMonth = month - 1
@@ -56,7 +56,7 @@ const getWeeks = (startDate: Date) => {
 
   const calendarDates = [...prevMonthDates, ...dates, ...nextMonthDates]
 
-  const line = Math.ceil(calendarDates.length / 7)
+  const line = Math.min(Math.ceil(calendarDates.length / 7), limit)
   return times(line).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
 }
 const Month: FC<M> = ({ startDate }) => {
@@ -64,7 +64,7 @@ const Month: FC<M> = ({ startDate }) => {
   return (
     <div className="swipe-page box">
       Month: {startDate.getMonth() + 1}
-      {getWeeks(startDate).map((week, i) => (
+      {getWeeks(startDate, 5).map((week, i) => (
         <div key={i}>
           {week.map((date) => (
             <span key={date}>{date}</span>

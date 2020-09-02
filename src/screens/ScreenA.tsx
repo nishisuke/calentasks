@@ -62,12 +62,14 @@ const getWeeks = (startDate: Date, limit: number) => {
 const Month: FC<M> = ({ startDate }) => {
   console.log(startDate.getMonth() + 1, 'Month')
   return (
-    <div className="swipe-page box">
+    <div className="swipe-page">
       Month: {startDate.getMonth() + 1}
       {getWeeks(startDate, 5).map((week, i) => (
-        <div key={i}>
+        <div className="cal-week" key={i}>
           {week.map((date) => (
-            <span key={date}>{date}</span>
+            <div className="cal-date" key={date}>
+              {date}
+            </div>
           ))}
         </div>
       ))}
@@ -91,7 +93,7 @@ const PageContainer: FC<P> = ({ index }) => {
 }
 
 // ==========
-export const ScreenA: FC = () => {
+export const Pages: FC = () => {
   const { calendar, setCalendar } = useContext(CalendarContext)
   const initIndex = calendar.currentIndex
 
@@ -121,5 +123,43 @@ export const ScreenA: FC = () => {
         <PageContainer key={i} index={i} />
       ))}
     </ReactSwipe>
+  )
+}
+export const Items: FC = () => {
+  const items = ['Hello', 'Hello', 'Hello', 'Hello', 'Hello', 'Hello', 'Hello']
+  return (
+    <>
+      {items.map((text, i) => (
+        <div key={i} className="field">
+          <input
+            className="is-checkradio"
+            id={`item-${i}`}
+            type="checkbox"
+            name="exampleCheckbox"
+          />
+          <label htmlFor={`item-${i}`}>{text}</label>
+        </div>
+      ))}
+    </>
+  )
+}
+export const ScreenA: FC = () => {
+  return (
+    <>
+      <Items />
+      <Pages />
+
+      <div className="field has-addons">
+        <div className="control">
+          <input className="input" type="text" />
+        </div>
+        <div className="control">
+          <a className="button">保存</a>
+        </div>
+      </div>
+      <a href="#" className="button is-floating is-small is-primary">
+        <i className="fas fa-plus"></i>
+      </a>
+    </>
   )
 }

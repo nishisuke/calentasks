@@ -8,9 +8,6 @@ body {
   height: 100%;
 }
 
-.box {
-  background: red;
-}
 .swipe {
   overflow: hidden;
   visibility: hidden;
@@ -20,4 +17,10 @@ body {
   float: left;
   width: 100%;
   position: relative;
+}
+.cal-week {
+  display: flex;
+}
+.cal-date {
+  flex: 1;
 }

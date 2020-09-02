@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "bulma": "^0.9.0",
-    "bulma-checkradio": "^1.1.1",
     "bulma-floating-button": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

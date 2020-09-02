@@ -8,7 +8,6 @@ import { CalendarContext, Calendar } from 'src/contexts/calendar'
 import 'bulma/css/bulma.min.css'
 import 'src/static/style.css'
 import 'bulma-floating-button/dist/css/bulma-floating-button.min.css'
-import 'bulma-checkradio/dist/css/bulma-checkradio.min.css'
 
 const App = () => {
   const now = new Date()

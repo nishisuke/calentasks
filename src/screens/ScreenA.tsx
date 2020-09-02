@@ -125,28 +125,73 @@ export const Pages: FC = () => {
     </ReactSwipe>
   )
 }
-export const Items: FC = () => {
+
+interface I {
+  tasks: Task[]
+  toggle: (t: Task) => void
+}
+export const Items: FC<I> = ({ tasks, toggle }) => {
   const items = ['Hello', 'Hello', 'Hello', 'Hello', 'Hello', 'Hello', 'Hello']
   return (
     <>
-      {items.map((text, i) => (
+      {tasks.map((t, i) => (
         <div key={i} className="field">
-          <input
-            className="is-checkradio"
-            id={`item-${i}`}
-            type="checkbox"
-            name="exampleCheckbox"
-          />
-          <label htmlFor={`item-${i}`}>{text}</label>
+          {!t.done && (
+            <span onClick={() => toggle(t)}>
+              <i className="far fa-circle" />
+            </span>
+          )}
+          {t.done && (
+            <span onClick={() => toggle(t)}>
+              <i className="fas fa-check" />
+            </span>
+          )}
+          {t.title}
         </div>
       ))}
     </>
   )
 }
+
+interface Task {
+  id: number
+  title: string
+  done: boolean
+}
 export const ScreenA: FC = () => {
+  const [items, setItems] = useState<Task[]>([
+    {
+      id: 4,
+      title: 'hello',
+      done: false,
+    },
+    {
+      id: 5,
+      title: 'hello',
+      done: false,
+    },
+    {
+      id: 3,
+      title: 'hello',
+      done: false,
+    },
+    {
+      id: 6,
+      title: 'hello',
+      done: false,
+    },
+  ])
+  const toggle = (t: Task) => {
+    setItems((b) => {
+      const tar: Task = b.find((e) => e.id === t.id)!
+      const others = b.filter((e) => e.id !== t.id)
+      return [...others, { ...tar, done: !tar.done }]
+    })
+  }
+
   return (
     <>
-      <Items />
+      <Items tasks={items} toggle={toggle} />
       <Pages />
 
       <div className="field has-addons">

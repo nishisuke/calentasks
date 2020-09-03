@@ -1,0 +1,58 @@
+@import '~bulma/bulma.sass';
+@import '~bulma-floating-button/dist/css/bulma-floating-button.min.css';
+
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+}
+#app {
+  height: 100%;
+}
+
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+.swipe-page {
+  float: left;
+  width: 100%;
+  position: relative;
+}
+.cal-week {
+  display: flex;
+}
+.cal-date {
+  flex: 1;
+}
+.task {
+  height: 24px;
+  transition: height .9s ease, display .9s linear 1s;
+  &.d {
+  height: 0;
+  display: none;
+  }
+/*  transition: <property> <duration> <timing-function> <delay>; */
+}
+
+.my-node-enter {
+  opacity: 0;
+}
+.my-node-enter-active {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+
+.my-node {
+  height: 24px;
+  overflow: hidden;
+}
+.my-node-exit {
+}
+.my-node-exit-active {
+  height: 0;
+  margin: 0;
+  transition: height .1s ease-out .4s;
+}

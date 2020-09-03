@@ -1,4 +1,6 @@
 import React, { FC, useState, useContext, useEffect, useRef } from 'react'
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
+
 import ReactSwipe from 'react-swipe'
 import { CalendarContext } from 'src/contexts/calendar'
 
@@ -127,29 +129,29 @@ export const Pages: FC = () => {
 }
 
 interface I {
-  tasks: Task[]
+  task: Task
   toggle: (t: Task) => void
 }
-export const Items: FC<I> = ({ tasks, toggle }) => {
-  const items = ['Hello', 'Hello', 'Hello', 'Hello', 'Hello', 'Hello', 'Hello']
+export const Item: FC<I> = ({ task, toggle }) => {
+  const [s, sb] = useState(task.done)
+  const click = () => {
+    sb(!task.done)
+    toggle(task)
+  }
   return (
-    <>
-      {tasks.map((t, i) => (
-        <div key={i} className="field">
-          {!t.done && (
-            <span onClick={() => toggle(t)}>
-              <i className="far fa-circle" />
-            </span>
-          )}
-          {t.done && (
-            <span onClick={() => toggle(t)}>
-              <i className="fas fa-check" />
-            </span>
-          )}
-          {t.title}
-        </div>
-      ))}
-    </>
+    <div className={`field my-node`}>
+      {!s && (
+        <span onClick={click}>
+          <i className="far fa-circle" />
+        </span>
+      )}
+      {s && (
+        <span onClick={click}>
+          <i className="fas fa-check" />
+        </span>
+      )}
+      {task.title}
+    </div>
   )
 }
 
@@ -183,15 +185,25 @@ export const ScreenA: FC = () => {
   ])
   const toggle = (t: Task) => {
     setItems((b) => {
-      const tar: Task = b.find((e) => e.id === t.id)!
-      const others = b.filter((e) => e.id !== t.id)
-      return [...others, { ...tar, done: !tar.done }]
+      const i: number = b.findIndex((e) => e.id === t.id)
+      const tar: Task = b[i]
+      const copy = [...b]
+      copy[i] = { ...tar, done: true }
+      return copy
     })
   }
 
   return (
     <>
-      <Items tasks={items} toggle={toggle} />
+      <TransitionGroup exit={true}>
+        {items
+          .filter((b) => !b.done)
+          .map((t, i) => (
+            <CSSTransition key={t.id} timeout={2000} classNames="my-node">
+              <Item task={t} toggle={toggle} />
+            </CSSTransition>
+          ))}
+      </TransitionGroup>
       <Pages />
 
       <div className="field has-addons">

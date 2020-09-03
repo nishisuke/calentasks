@@ -10,7 +10,9 @@ const devMode = !!process.env.DEBUG
 
 module.exports = {
   devServer: {
+    host: '0.0.0.0',
     historyApiFallback: true,
+    //    disableHostCheck: true,
   },
   devtool: 'inline-source-map',
   entry: './src/index.tsx',

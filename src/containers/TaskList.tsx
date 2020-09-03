@@ -4,29 +4,16 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
+const arr = Array(73)
+  .fill(null)
+  .map((_, id) => ({
+    id,
+    title: 'hello',
+    done: false,
+  }))
 export const TaskList: FC = () => {
-  const [items, setItems] = useState<Task[]>([
-    {
-      id: 4,
-      title: 'hello',
-      done: false,
-    },
-    {
-      id: 5,
-      title: 'hello',
-      done: false,
-    },
-    {
-      id: 3,
-      title: 'hello',
-      done: false,
-    },
-    {
-      id: 6,
-      title: 'hello',
-      done: false,
-    },
-  ])
+  const [items, setItems] = useState<Task[]>(arr)
+
   const toggle = (t: Task) => {
     setItems((b) => {
       const i: number = b.findIndex((e) => e.id === t.id)

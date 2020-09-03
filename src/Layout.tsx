@@ -26,7 +26,6 @@ export const Layout: FC<Props> = ({ page }) => {
       <div className="scroll-container" ref={ref}>
         {page}
       </div>
-      <div className="foo"></div>
     </>
   )
 }

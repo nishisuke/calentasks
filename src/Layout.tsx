@@ -1,17 +1,22 @@
-import React, { FC, ReactNode, useState, useRef } from 'react'
+import React, { FC, ReactNode, useRef } from 'react'
 
 interface Props {
   page: ReactNode
 }
 
+declare global {
+  interface Window {
+    currentScrollTop: number
+  }
+}
+
 export const Layout: FC<Props> = ({ page }) => {
-  const [scrollTop, setScrollTop] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
 
   return (
     <div
       className="scroll-container"
-      onScroll={() => setScrollTop(ref.current?.scrollTop || 0)}
+      onScroll={() => (window.currentScrollTop = ref.current?.scrollTop || 0)}
       ref={ref}
     >
       {page}

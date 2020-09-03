@@ -4,7 +4,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
-const arr = Array(73)
+const arr = Array(30)
   .fill(null)
   .map((_, id) => ({
     id,

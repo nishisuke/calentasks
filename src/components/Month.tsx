@@ -32,7 +32,7 @@ const getWeeks = (startDate: Date, limit: number) => {
 }
 
 export const Month: FC<M> = ({ startDate }) => {
-  console.log(startDate.getMonth() + 1, 'Month')
+  // console.log(startDate.getMonth() + 1, 'Month')
   return (
     <div className="swipe-page">
       Month: {startDate.getMonth() + 1}

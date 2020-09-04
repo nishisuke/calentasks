@@ -7,6 +7,10 @@ import { CalendarContext, Calendar } from 'src/contexts/calendar'
 
 import 'src/static/style.scss'
 
+// Side effects
+import 'src/libs/initFirebase'
+import 'firebase/firestore'
+
 const App = () => {
   const now = new Date()
   const [calendar, setCalendar] = useState<Calendar>({

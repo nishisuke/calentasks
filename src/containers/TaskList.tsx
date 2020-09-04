@@ -6,23 +6,12 @@ import { Item } from 'src/components/Task'
 
 interface P {
   tasks: Task[]
+  toggle: (t: Task) => void
 }
-export const TaskList: FC<P> = ({ tasks }) => {
-  const [items, setItems] = useState<Task[]>(tasks)
-
-  const toggle = (t: Task) => {
-    setItems((b) => {
-      const i: number = b.findIndex((e) => e.id === t.id)
-      const tar: Task = b[i]
-      const copy = [...b]
-      copy[i] = { ...tar, done: true }
-      return copy
-    })
-  }
-
+export const TaskList: FC<P> = ({ tasks, toggle }) => {
   return (
     <TransitionGroup exit={true}>
-      {items
+      {tasks
         .filter((b) => !b.done)
         .map((t, i) => (
           <CSSTransition key={t.id} timeout={2000} classNames="my-node">

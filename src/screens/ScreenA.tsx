@@ -5,13 +5,7 @@ import { TaskList } from 'src/containers/TaskList'
 import { Task } from 'src/types/Task'
 import { CSSTransition } from 'react-transition-group'
 
-const arr = Array(30)
-  .fill(null)
-  .map((_, id) => ({
-    id,
-    title: 'hello',
-    done: false,
-  }))
+import firebase from 'firebase/app'
 
 interface FP {
   onClick: () => void
@@ -24,7 +18,7 @@ const FAB: FC<FP> = ({ onClick, children }) => (
 )
 
 export const ScreenA: FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(arr)
+  const [tasks, setTasks] = useState<Task[]>([])
   const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({
     in: false,
@@ -34,25 +28,57 @@ export const ScreenA: FC = () => {
   const [t, sett] = useState('')
   const [d, setdt] = useState<number | undefined>(undefined)
 
-  const addAndEnd = ({ title, date }: { title: string; date?: number }) => {
+  const addAndEnd = async ({
+    title,
+    date,
+  }: {
+    title: string
+    date?: number
+  }) => {
     if (title) {
-      addTask({ title, date })
+      await addTask({ title, date })
     }
     setAddMode(false)
   }
-  const addTask = ({ title, date }: { title: string; date?: number }) => {
-    setTasks((b) => [
-      ...b,
-      {
-        id: Date.now(),
+  useEffect(() => {
+    firebase
+      .firestore()
+      .collection('tasks')
+      .get()
+      .then(function (querySnapshot: any) {
+        const arr: Task[] = []
+        querySnapshot.forEach(function (doc: any) {
+          const data = doc.data()
+          arr.push({
+            ...data,
+            id: doc.id,
+            date: data?.date || undefined,
+          })
+        })
+        setTasks(arr)
+      })
+      .catch((e: Error) => console.error(e)) // TODO
+  }, [])
+
+  const addTask = async ({ title, date }: { title: string; date?: number }) => {
+    try {
+      const doc = firebase.firestore().collection('tasks').doc()
+      const ob = {
         done: false,
         title,
-        date,
-      },
-    ])
-    sett('')
-    setdt(undefined)
-    setAnimTrigger({ in: !animTrigger.in, title })
+        date: date || null,
+      }
+      await doc.set(ob)
+
+      sett('')
+      setdt(undefined)
+      setAnimTrigger({ in: !animTrigger.in, title })
+      const task: Task = { ...ob, id: doc.id, date: date }
+      setTasks((b) => [...b, task])
+    } catch (e) {
+      // TODO: e
+      alert('fail')
+    }
   }
 
   useEffect(() => {
@@ -67,6 +93,25 @@ export const ScreenA: FC = () => {
         setDate(y, m, d)
         setAddMode(true)
       }
+
+  const toggle = async (t: Task) => {
+    try {
+      const doc = firebase.firestore().collection('tasks').doc(t.id)
+      await doc.set({ done: !t.done }, { merge: true })
+
+      setTasks((b) => {
+        const i: number = b.findIndex((e) => e.id === t.id)
+        const tar: Task = b[i]
+        const copy = [...b]
+        copy[i] = { ...tar, done: true }
+        return copy
+      })
+    } catch (e) {
+      // TODO: e
+      alert('fail')
+    }
+  }
+
   return (
     <>
       <Calendar handleDate={handleDate} />
@@ -122,7 +167,7 @@ export const ScreenA: FC = () => {
         </FAB>
       )}
 
-      {!addMode && <TaskList tasks={tasks} />}
+      {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
     </>
   )
 }

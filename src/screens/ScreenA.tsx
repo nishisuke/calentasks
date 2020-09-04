@@ -4,6 +4,7 @@ import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'
 import { Task } from 'src/types/Task'
 import { CSSTransition } from 'react-transition-group'
+import { Auth } from 'src/types'
 
 import firebase from 'firebase/app'
 
@@ -17,7 +18,14 @@ const FAB: FC<FP> = ({ onClick, children }) => (
   </button>
 )
 
-export const ScreenA: FC = () => {
+interface P {
+  auth: Auth
+}
+export const ScreenA: FC<P> = ({ auth }) => {
+  if (!auth.loaded) {
+    return <div>Loading</div>
+  } else if (!auth.user) {
+  }
   const [tasks, setTasks] = useState<Task[]>([])
   const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({

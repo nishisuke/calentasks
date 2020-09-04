@@ -27,7 +27,7 @@ const App = () => {
   } else if (!auth.user) {
     return <SignIn />
   } else if (auth.user) {
-    const page = <ScreenA auth={auth} />
+    const page = <ScreenA user={auth.user} />
 
     return (
       <CalendarContext.Provider value={{ calendar, setCalendar }}>

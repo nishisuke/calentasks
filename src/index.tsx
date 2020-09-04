@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
 import { render } from 'react-dom'
 
+// Side effects
+import 'src/libs/initFirebase'
+import 'firebase/auth'
+import 'firebase/firestore'
+
 import { Layout } from 'src/Layout'
 import { CalendarContext, Calendar } from 'src/contexts/calendar'
 import { useAuth } from 'src/hooks/useAuth'
 import { ScreenA } from 'src/screens/ScreenA'
 
 import 'src/static/style.scss'
-
-// Side effects
-import 'src/libs/initFirebase'
-import 'firebase/auth'
-import 'firebase/firestore'
 
 const App = () => {
   const auth = useAuth()

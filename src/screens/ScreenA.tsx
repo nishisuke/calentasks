@@ -36,9 +36,11 @@ export const ScreenA: FC = () => {
     date?: number
   }) => {
     if (title) {
-      await addTask({ title, date })
+      addTask({ title, date }).then(() => setAddMode(false))
+      // TODO: catch
+    } else {
+      setAddMode(false)
     }
-    setAddMode(false)
   }
   useEffect(() => {
     firebase

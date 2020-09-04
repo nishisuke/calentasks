@@ -61,3 +61,14 @@ body {
   margin: 0;
   transition: height .1s ease-out .4s;
 }
+.my-check,.my-check-exit-done,.my-check-enter-done {
+  display: none;
+}
+.my-check-enter,.my-check-exit {
+  display: inline;
+  opacity: 1;
+}
+.my-check-enter-active,.my-check-exit-active {
+  opacity: 0;
+  transition: opacity .2s ease-out .7s;
+}

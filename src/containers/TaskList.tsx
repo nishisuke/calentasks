@@ -4,15 +4,11 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
-const arr = Array(30)
-  .fill(null)
-  .map((_, id) => ({
-    id,
-    title: 'hello',
-    done: false,
-  }))
-export const TaskList: FC = () => {
-  const [items, setItems] = useState<Task[]>(arr)
+interface P {
+  tasks: Task[]
+}
+export const TaskList: FC<P> = ({ tasks }) => {
+  const [items, setItems] = useState<Task[]>(tasks)
 
   const toggle = (t: Task) => {
     setItems((b) => {

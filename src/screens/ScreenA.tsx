@@ -24,11 +24,6 @@ interface P {
   auth: Auth
 }
 export const ScreenA: FC<P> = ({ auth }) => {
-  if (!auth.loaded) {
-    return <div>Loading</div>
-  } else if (!auth.user) {
-    return <SignIn />
-  }
   const [tasks, setTasks] = useState<Task[]>([])
   const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({
@@ -80,6 +75,7 @@ export const ScreenA: FC<P> = ({ auth }) => {
         done: false,
         title,
         date: date || null,
+        userID: auth.user!.uid,
       }
       await doc.set(ob)
 
@@ -125,65 +121,73 @@ export const ScreenA: FC<P> = ({ auth }) => {
     }
   }
 
-  return (
-    <>
-      <Calendar handleDate={handleDate} />
-      {addMode && (
-        <>
-          <div className="field has-addons">
-            <div className="control">
-              <input
-                ref={inputRef}
-                onChange={(e) => sett(e.target.value)}
-                value={t}
-                className="input"
-                type="text"
-              />
+  if (!auth.loaded) {
+    return <div>Loading</div>
+  } else if (!auth.user) {
+    return <SignIn />
+  } else if (auth.user) {
+    return (
+      <>
+        <Calendar handleDate={handleDate} />
+        {addMode && (
+          <>
+            <div className="field has-addons">
+              <div className="control">
+                <input
+                  ref={inputRef}
+                  onChange={(e) => sett(e.target.value)}
+                  value={t}
+                  className="input"
+                  type="text"
+                />
+              </div>
+              <div className="control">
+                <button
+                  onClick={() => addTask({ title: t, date: d })}
+                  className="button"
+                >
+                  保存
+                </button>
+              </div>
             </div>
-            <div className="control">
-              <button
-                onClick={() => addTask({ title: t, date: d })}
-                className="button"
-              >
-                保存
-              </button>
-            </div>
-          </div>
-          {d && (
-            <div className="field ">
-              <p className="help">
-                {new Date(d).getFullYear()}/{new Date(d).getMonth() + 1}/
-                {new Date(d).getDate()}
-              </p>
-            </div>
-          )}
-        </>
-      )}
+            {d && (
+              <div className="field ">
+                <p className="help">
+                  {new Date(d).getFullYear()}/{new Date(d).getMonth() + 1}/
+                  {new Date(d).getDate()}
+                </p>
+              </div>
+            )}
+          </>
+        )}
 
-      <CSSTransition in={animTrigger.in} timeout={2000} classNames="my-check">
-        <span className="my-check">
-          <i className={`fas fa-check`} />
-          {animTrigger.title} を保存しました
-        </span>
-      </CSSTransition>
-      {!addMode && (
-        <FAB onClick={() => setAddMode(true)}>
-          <i className={`fas fa-plus`} />
-        </FAB>
-      )}
-      {addMode && t && (
-        <FAB onClick={() => addAndEnd({ title: t, date: d })}>OK</FAB>
-      )}
-      {addMode && !t && (
-        <FAB onClick={() => setAddMode(false)}>
-          <i className={`fas fa-times`} />
-        </FAB>
-      )}
+        <CSSTransition in={animTrigger.in} timeout={2000} classNames="my-check">
+          <span className="my-check">
+            <i className={`fas fa-check`} />
+            {animTrigger.title} を保存しました
+          </span>
+        </CSSTransition>
+        {!addMode && (
+          <FAB onClick={() => setAddMode(true)}>
+            <i className={`fas fa-plus`} />
+          </FAB>
+        )}
+        {addMode && t && (
+          <FAB onClick={() => addAndEnd({ title: t, date: d })}>OK</FAB>
+        )}
+        {addMode && !t && (
+          <FAB onClick={() => setAddMode(false)}>
+            <i className={`fas fa-times`} />
+          </FAB>
+        )}
 
-      {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
-      <button onClick={signOut} className="button ">
-        sign out
-      </button>
-    </>
-  )
+        {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
+        <button onClick={signOut} className="button ">
+          sign out
+        </button>
+      </>
+    )
+  } else {
+    throw new Error('Fail')
+  }
 }

@@ -52,6 +52,7 @@ export const ScreenA: FC<P> = ({ auth }) => {
     firebase
       .firestore()
       .collection('tasks')
+      .where('userID', '==', auth.user!.uid)
       .get()
       .then(function (querySnapshot: any) {
         const arr: Task[] = []

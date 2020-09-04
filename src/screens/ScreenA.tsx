@@ -60,7 +60,7 @@ export const ScreenA: FC = () => {
   }, [addMode])
 
   const setDate = (y: number, m: number, d: number) =>
-    setdt(new Date(y, m, d).getTime())
+    setdt(new Date(y, m - 1, d).getTime())
   const handleDate = addMode
     ? setDate
     : (y: number, m: number, d: number) => {

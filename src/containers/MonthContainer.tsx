@@ -6,6 +6,7 @@ import { Month } from 'src/components/Month'
 interface P {
   index: number
   pages: number
+  handleDate?: (y: number, m: number, d: number) => void
 }
 
 const loopRelativeIndex = (
@@ -22,12 +23,12 @@ const loopRelativeIndex = (
   }
 }
 
-export const MonthContainer: FC<P> = ({ index, pages }) => {
+export const MonthContainer: FC<P> = ({ index, pages, handleDate }) => {
   const {
     calendar: { currentIndex, displayedMonth },
   } = useContext(CalendarContext)
   const diff = loopRelativeIndex(index, currentIndex, pages)
   const thisYear = new Date().getFullYear()
   const startDate = new Date(thisYear, diff + displayedMonth - 1, 1)
-  return <Month startDate={startDate} />
+  return <Month handleDate={handleDate} startDate={startDate} />
 }

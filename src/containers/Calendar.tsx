@@ -13,9 +13,11 @@ const loopSwipeDirection = (be: number, af: number, loop: number) => {
   }
   return af - be
 }
-export const Calendar: FC = () => {
+interface P {
+  handleDate?: (y: number, m: number, d: number) => void
+}
+export const Calendar: FC<P> = ({ handleDate }) => {
   const { calendar, setCalendar } = useContext(CalendarContext)
-  const initIndex = calendar.currentIndex
 
   const callback = (nextIndex: number) => {
     setCalendar((before) => ({
@@ -29,7 +31,11 @@ export const Calendar: FC = () => {
   return (
     <ReactSwipe
       className="swipe"
-      swipeOptions={{ startSlide: initIndex, continuous: true, callback }}
+      swipeOptions={{
+        startSlide: calendar.currentIndex,
+        continuous: true,
+        callback,
+      }}
       style={{
         container: {},
         wrapper: {
@@ -40,7 +46,12 @@ export const Calendar: FC = () => {
       }}
     >
       {array.map((_, i) => (
-        <MonthContainer key={i} index={i} pages={array.length} />
+        <MonthContainer
+          handleDate={i === calendar.currentIndex ? handleDate : undefined}
+          key={i}
+          index={i}
+          pages={array.length}
+        />
       ))}
     </ReactSwipe>
   )

@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 
 interface M {
   startDate: Date
+  handleDate?: (y: number, m: number, d: number) => void
 }
 
 const times = (n: number) => Array(n).fill(null)
@@ -31,15 +32,29 @@ const getWeeks = (startDate: Date, limit: number) => {
   return times(line).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
 }
 
-export const Month: FC<M> = ({ startDate }) => {
+export const Month: FC<M> = ({ startDate, handleDate }) => {
   // console.log(startDate.getMonth() + 1, 'Month')
+
   return (
     <div className="swipe-page">
       Month: {startDate.getMonth() + 1}
       {getWeeks(startDate, 5).map((week, i) => (
         <div className="cal-week" key={i}>
           {week.map((date) => (
-            <div className="cal-date" key={date}>
+            <div
+              onClick={
+                handleDate
+                  ? () =>
+                      handleDate(
+                        startDate.getFullYear(),
+                        startDate.getMonth() + 1,
+                        date
+                      )
+                  : undefined
+              }
+              className="cal-date"
+              key={date}
+            >
               {date}
             </div>
           ))}

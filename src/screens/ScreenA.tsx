@@ -4,8 +4,7 @@ import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'
 import { Task } from 'src/types/Task'
 import { CSSTransition } from 'react-transition-group'
-import { Auth } from 'src/types'
-import { SignIn } from 'src/containers/SignIn'
+import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
 import { signOut } from 'src/services/authService'
@@ -21,9 +20,9 @@ const FAB: FC<FP> = ({ onClick, children }) => (
 )
 
 interface P {
-  auth: Auth
+  user: AuthedUser
 }
-export const ScreenA: FC<P> = ({ auth }) => {
+export const ScreenA: FC<P> = ({ user }) => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({
@@ -52,7 +51,7 @@ export const ScreenA: FC<P> = ({ auth }) => {
     firebase
       .firestore()
       .collection('tasks')
-      .where('userID', '==', auth.user!.uid)
+      .where('userID', '==', user.uid)
       .get()
       .then(function (querySnapshot: any) {
         const arr: Task[] = []
@@ -76,7 +75,7 @@ export const ScreenA: FC<P> = ({ auth }) => {
         done: false,
         title,
         date: date || null,
-        userID: auth.user!.uid,
+        userID: user.uid,
       }
       await doc.set(ob)
 
@@ -122,73 +121,65 @@ export const ScreenA: FC<P> = ({ auth }) => {
     }
   }
 
-  if (!auth.loaded) {
-    return <div>Loading</div>
-  } else if (!auth.user) {
-    return <SignIn />
-  } else if (auth.user) {
-    return (
-      <>
-        <Calendar handleDate={handleDate} />
-        {addMode && (
-          <>
-            <div className="field has-addons">
-              <div className="control">
-                <input
-                  ref={inputRef}
-                  onChange={(e) => sett(e.target.value)}
-                  value={t}
-                  className="input"
-                  type="text"
-                />
-              </div>
-              <div className="control">
-                <button
-                  onClick={() => addTask({ title: t, date: d })}
-                  className="button"
-                >
-                  保存
-                </button>
-              </div>
+  return (
+    <>
+      <Calendar handleDate={handleDate} />
+      {addMode && (
+        <>
+          <div className="field has-addons">
+            <div className="control">
+              <input
+                ref={inputRef}
+                onChange={(e) => sett(e.target.value)}
+                value={t}
+                className="input"
+                type="text"
+              />
             </div>
-            {d && (
-              <div className="field ">
-                <p className="help">
-                  {new Date(d).getFullYear()}/{new Date(d).getMonth() + 1}/
-                  {new Date(d).getDate()}
-                </p>
-              </div>
-            )}
-          </>
-        )}
+            <div className="control">
+              <button
+                onClick={() => addTask({ title: t, date: d })}
+                className="button"
+              >
+                保存
+              </button>
+            </div>
+          </div>
+          {d && (
+            <div className="field ">
+              <p className="help">
+                {new Date(d).getFullYear()}/{new Date(d).getMonth() + 1}/
+                {new Date(d).getDate()}
+              </p>
+            </div>
+          )}
+        </>
+      )}
 
-        <CSSTransition in={animTrigger.in} timeout={2000} classNames="my-check">
-          <span className="my-check">
-            <i className={`fas fa-check`} />
-            {animTrigger.title} を保存しました
-          </span>
-        </CSSTransition>
-        {!addMode && (
-          <FAB onClick={() => setAddMode(true)}>
-            <i className={`fas fa-plus`} />
-          </FAB>
-        )}
-        {addMode && t && (
-          <FAB onClick={() => addAndEnd({ title: t, date: d })}>OK</FAB>
-        )}
-        {addMode && !t && (
-          <FAB onClick={() => setAddMode(false)}>
-            <i className={`fas fa-times`} />
-          </FAB>
-        )}
+      <CSSTransition in={animTrigger.in} timeout={2000} classNames="my-check">
+        <span className="my-check">
+          <i className={`fas fa-check`} />
+          {animTrigger.title} を保存しました
+        </span>
+      </CSSTransition>
+      {!addMode && (
+        <FAB onClick={() => setAddMode(true)}>
+          <i className={`fas fa-plus`} />
+        </FAB>
+      )}
+      {addMode && t && (
+        <FAB onClick={() => addAndEnd({ title: t, date: d })}>OK</FAB>
+      )}
+      {addMode && !t && (
+        <FAB onClick={() => setAddMode(false)}>
+          <i className={`fas fa-times`} />
+        </FAB>
+      )}
 
-        {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
-        <button onClick={signOut} className="button ">
-          sign out
-        </button>
-      </>
-    )
-  } else {
-    throw new Error('Fail')
-  }
+      {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
+      <button onClick={signOut} className="button ">
+        sign out
+      </button>
+    </>
+  )
 }

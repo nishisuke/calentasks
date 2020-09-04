@@ -10,6 +10,7 @@ import { Layout } from 'src/Layout'
 import { CalendarContext, Calendar } from 'src/contexts/calendar'
 import { useAuth } from 'src/hooks/useAuth'
 import { ScreenA } from 'src/screens/ScreenA'
+import { SignIn } from 'src/containers/SignIn'
 
 import 'src/static/style.scss'
 
@@ -21,13 +22,21 @@ const App = () => {
     displayedMonth: now.getMonth() + 1,
   })
 
-  const page = <ScreenA auth={auth} />
+  if (!auth.loaded) {
+    return <div>Loading</div>
+  } else if (!auth.user) {
+    return <SignIn />
+  } else if (auth.user) {
+    const page = <ScreenA auth={auth} />
 
-  return (
-    <CalendarContext.Provider value={{ calendar, setCalendar }}>
-      <Layout page={page} />
-    </CalendarContext.Provider>
-  )
+    return (
+      <CalendarContext.Provider value={{ calendar, setCalendar }}>
+        <Layout page={page} />
+      </CalendarContext.Provider>
+    )
+  } else {
+    throw new Error('Fail')
+  }
 }
 
 render(<App />, document.getElementById('app'))

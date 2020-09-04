@@ -5,8 +5,10 @@ import { TaskList } from 'src/containers/TaskList'
 import { Task } from 'src/types/Task'
 import { CSSTransition } from 'react-transition-group'
 import { Auth } from 'src/types'
+import { SignIn } from 'src/containers/SignIn'
 
 import firebase from 'firebase/app'
+import { signOut } from 'src/services/authService'
 
 interface FP {
   onClick: () => void
@@ -25,6 +27,7 @@ export const ScreenA: FC<P> = ({ auth }) => {
   if (!auth.loaded) {
     return <div>Loading</div>
   } else if (!auth.user) {
+    return <SignIn />
   }
   const [tasks, setTasks] = useState<Task[]>([])
   const [addMode, setAddMode] = useState(false)
@@ -178,6 +181,9 @@ export const ScreenA: FC<P> = ({ auth }) => {
       )}
 
       {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
+      <button onClick={signOut} className="button ">
+        sign out
+      </button>
     </>
   )
 }

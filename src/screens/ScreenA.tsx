@@ -23,69 +23,6 @@ interface P {
   user: AuthedUser
 }
 
-const calundoneorder = (a: Task, b: Task) => {
-  return a.date === b.date ? b.activatedAt - a.activatedAt : a.date! - b.date!
-}
-
-const calnoundoneorder = (cal: Task, nocal: Task, now: number) => {
-  if (nocal.orderDate) {
-    return cal.date! === nocal.orderDate ? -1 : cal.date! - nocal.orderDate
-  } else {
-    return cal.date! === now
-      ? nocal.activatedAt - cal.activatedAt
-      : cal.date! - now
-  }
-}
-
-//  date?: number
-//  orderDate?: number
-//  orderDateIndex?: number
-//
-//  activatedAt: number
-//  doneAt?: number
-const undoneorder = (t: Task[]) => {
-  const copy = [...t]
-  const now = Date.now() // TODO: 00:00:00
-  copy.sort((a: Task, b: Task) => {
-    if (a.date && b.date) {
-      return calundoneorder(a, b)
-    }
-    if (a.date && !b.date) {
-      return calnoundoneorder(a, b, now)
-    }
-    if (!a.date && b.date) {
-      return -1 * calnoundoneorder(a, b, now)
-    }
-    if (!a.date && !b.date) {
-      if (a.orderDate && b.orderDate) {
-        return a.orderDate === b.orderDate
-          ? a.orderDateIndex! - b.orderDateIndex!
-          : a.orderDate - b.orderDate
-      }
-      if (a.orderDate && !b.orderDate) {
-        return a.orderDate! === now
-          ? b.activatedAt - a.activatedAt
-          : a.orderDate! - now
-      }
-      if (!a.orderDate && b.orderDate) {
-        return b.orderDate! === now
-          ? b.activatedAt - a.activatedAt
-          : now - b.orderDate!
-      }
-      if (!a.orderDate && !b.orderDate) {
-        return b.activatedAt - a.activatedAt
-      }
-      //  orderDate?: number
-      //  orderDateIndex?: number
-      //
-      //  activatedAt: number
-      //  doneAt?: number
-    }
-    return 0
-  })
-  return copy
-}
-
 type DoneTask = { [key: string]: Task[] }
 export const ScreenA: FC<P> = ({ user }) => {
   const [dones, setDones] = useState<DoneTask>({ done: [], undone: [] })
@@ -154,7 +91,7 @@ export const ScreenA: FC<P> = ({ user }) => {
         const done = arr.filter((b) => b.done)
         const undone = arr.filter((b) => !b.done)
         setDones({
-          done: undoneorder(done),
+          done,
           undone,
         })
       })
@@ -234,6 +171,7 @@ export const ScreenA: FC<P> = ({ user }) => {
         .doc(user.uid)
         .set({ keysInOrder })
 
+      setOrder(keysInOrder)
       sett('')
       setdt(undefined)
       setAnimTrigger({ in: !animTrigger.in, title })
@@ -244,7 +182,7 @@ export const ScreenA: FC<P> = ({ user }) => {
 
         return {
           ...b,
-          undone: undoneorder(undone),
+          undone,
         }
       })
     } catch (e) {
@@ -286,11 +224,11 @@ export const ScreenA: FC<P> = ({ user }) => {
         return t.done
           ? {
               done: removed,
-              undone: undoneorder(added),
+              undone: added,
             }
           : {
               done: added,
-              undone: undoneorder(removed),
+              undone: removed,
             }
       })
     } catch (e) {

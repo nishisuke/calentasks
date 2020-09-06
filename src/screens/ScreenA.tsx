@@ -29,7 +29,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     in: false,
     title: '',
   })
-  const [t, sett] = useState('')
+  const [title, sett] = useState('')
   const [d, setdt] = useState<number | undefined>(undefined)
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -82,14 +82,14 @@ export const ScreenA: FC<P> = ({ user }) => {
               <input
                 ref={inputRef}
                 onChange={(e) => sett(e.target.value)}
-                value={t}
+                value={title}
                 className="input"
                 type="text"
               />
             </div>
             <div className="control">
               <button
-                onClick={() => addTask({ title: t, date: d })}
+                onClick={() => addTask({ title: title, date: d })}
                 className="button"
               >
                 保存
@@ -118,10 +118,10 @@ export const ScreenA: FC<P> = ({ user }) => {
           <i className={`fas fa-plus`} />
         </FAB>
       )}
-      {addMode && t && (
-        <FAB onClick={() => addAndEnd({ title: t, date: d })}>OK</FAB>
+      {addMode && title && (
+        <FAB onClick={() => addAndEnd({ title: title, date: d })}>OK</FAB>
       )}
-      {addMode && !t && (
+      {addMode && !title && (
         <FAB onClick={() => setAddMode(false)}>
           <i className={`fas fa-times`} />
         </FAB>

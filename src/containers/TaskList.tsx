@@ -1,5 +1,10 @@
 import React, { FC, useState } from 'react'
-import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd'
+import {
+  Draggable,
+  Droppable,
+  DragDropContext,
+  DraggableProvided,
+} from 'react-beautiful-dnd'
 
 import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
@@ -27,7 +32,7 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
       <Droppable droppableId="droppable-1">
         {(provided: any) => (
           <div
-            className="has-background-grey-darker"
+            className="tasklist has-background-grey-darker"
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
@@ -44,7 +49,7 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                     draggableId={idDrag}
                     index={i}
                   >
-                    {(provided: any) => (
+                    {(provided: DraggableProvided) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
@@ -64,8 +69,15 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                 const id = ts[0].id
                 return (
                   <Draggable key={id} draggableId={id} index={i}>
-                    {(provided: any) => (
-                      <Item provided={provided} task={ts[0]} done={done} />
+                    {(provided: DraggableProvided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="box taskbox"
+                      >
+                        <Item task={ts[0]} done={done} />
+                      </div>
                     )}
                   </Draggable>
                 )

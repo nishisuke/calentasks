@@ -49,7 +49,7 @@ export const useTask = (user: AuthedUser) => {
         const dateOb = new Date(date)
         const dateKey = `${dateOb.getFullYear()}${`0${
           dateOb.getMonth() + 1
-        }`.slice(1)}${`0${dateOb.getDate()}`.slice(1)}`
+        }`.slice(-2)}${`0${dateOb.getDate()}`.slice(-2)}`
         if (dateOrder.indexOf(date) === -1) {
           if (date > tod) {
             const plu = dateOrder.findIndex((k) => k && k > date)

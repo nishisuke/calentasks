@@ -23,6 +23,66 @@ interface P {
   user: AuthedUser
 }
 
+const calundoneorder = (a: Task, b: Task) => {
+  return a.date === b.date ? b.activatedAt - a.activatedAt : a.date - b.date
+}
+
+const calnoundoneorder = (cal: Task, nocal: Task, now: number) => {
+  if (nocal.orderDate) {
+    return cal.date === nocal.orderDate ? -1 : cal.date - nocal.orderDate
+  } else {
+    return cal.date === now
+      ? nocal.activatedAt - cal.activatedAt
+      : cal.date - now
+  }
+}
+
+//  date?: number
+//  orderDate?: number
+//  orderDateIndex?: number
+//
+//  activatedAt: number
+//  doneAt?: number
+const undoneorder = (t: Task[]) => {
+  const copy = [...t]
+  copy.sort((a: Task, b: Task) => {
+    if (a.date && b.data) {
+      return calundoneorder(a, b)
+    }
+    if (a.date && !b.date) {
+      return calnoundoneorder(a, b)
+    }
+    if (!a.date && b.date) {
+      return -1 * calnoundoneorder(a, b)
+    }
+    if (!a.date && !b.date) {
+      if (a.orderDate && b.orderDate) {
+        return a.orderDate === b.orderDate
+          ? a.orderDateIndex - b.orderDateIndex
+          : a.orderDate - b.orderDate
+      }
+      if (a.orderDate && !b.orderDate) {
+        return a.date === now ? b.activatedAt - a.activatedAt : a.date - now
+      }
+      if (!a.orderDate && b.orderDate) {
+        return b.date === now
+          ? b.activatedAt - a.activatedAt
+          : now - b.orderDate
+      }
+      if (!a.orderDate && !b.orderDate) {
+        return b.activatedAt - a.activatedAt
+      }
+      //  orderDate?: number
+      //  orderDateIndex?: number
+      //
+      //  activatedAt: number
+      //  doneAt?: number
+    }
+    return 0
+  })
+  return copy
+}
+
 type DoneTask = { [key: string]: Task[] }
 export const ScreenA: FC<P> = ({ user }) => {
   const [dones, setDones] = useState<DoneTask>({ done: [], undone: [] })
@@ -67,9 +127,12 @@ export const ScreenA: FC<P> = ({ user }) => {
           })
         })
 
+        const done = arr.filter((b) => b.done)
+        done.sort(undoneorder)
+        const undone = arr.filter((b) => !b.done)
         setDones({
-          done: arr.filter((b) => b.done),
-          undone: arr.filter((b) => !b.done),
+          done,
+          undone,
         })
       })
       .catch((e: Error) => console.error(e)) // TODO
@@ -78,11 +141,14 @@ export const ScreenA: FC<P> = ({ user }) => {
   const addTask = async ({ title, date }: { title: string; date?: number }) => {
     try {
       const doc = firebase.firestore().collection('tasks').doc()
+      const now = Date.now()
       const ob = {
         done: false,
         title,
         date: date || null,
         userID: user.uid,
+        createdAt: now,
+        activatedAt: now,
       }
       await doc.set(ob)
 
@@ -90,9 +156,12 @@ export const ScreenA: FC<P> = ({ user }) => {
       setdt(undefined)
       setAnimTrigger({ in: !animTrigger.in, title })
       const task: Task = { ...ob, id: doc.id, date: date }
+
+      const undone = [...b.undone, task]
+      undone.sort(undoneorder)
       setDones((b) => ({
         ...b,
-        undone: [...b.undone, task],
+        undone,
       }))
     } catch (e) {
       // TODO: e
@@ -116,15 +185,21 @@ export const ScreenA: FC<P> = ({ user }) => {
   const toggle = async (t: Task) => {
     try {
       const doc = firebase.firestore().collection('tasks').doc(t.id)
-      await doc.set({ done: !t.done }, { merge: true })
+      const now = Date.now()
+      const upda = t.done
+        ? { done: !t.done, activatedAt: now }
+        : { done: !t.done, doneAt: now }
+      await doc.set(upda, { merge: true })
 
       setDones((b) => {
         const removeArr = t.done ? b.done : b.undone
         const addedArr = !t.done ? b.done : b.undone
         const tar: Task = removeArr.find((e) => e.id === t.id)!
-        const toggled = { ...tar, done: !tar.done }
+        const toggled = { ...tar, ...upda }
         const removed = removeArr.filter((e) => e.id !== t.id)
         const added = [...addedArr, toggled]
+
+        t.done ? added.sort(undoneorder) : null
         return t.done
           ? {
               done: removed,

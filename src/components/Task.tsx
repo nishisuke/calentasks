@@ -12,10 +12,9 @@ interface I {
 
 // This is undone
 export const Item: FC<I> = ({ task, toggle, provided }) => {
-  const [s, sb] = useState(task.done)
+  const [s, sb] = useState(false)
   const click = () => {
-    sb(!task.done)
-    setTimeout(() => toggle(task), 2000)
+    sb(true)
   }
   return (
     <CSSTransition
@@ -24,6 +23,7 @@ export const Item: FC<I> = ({ task, toggle, provided }) => {
       enter={false}
       timeout={2000}
       classNames="my-node"
+      onExited={() => toggle(task)}
     >
       <div
         ref={provided.innerRef}

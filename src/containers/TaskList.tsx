@@ -5,7 +5,7 @@ import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
 interface P {
-  tasks: Task[]
+  tasks: Task[][]
   toggle: (t: Task) => void
   setTasks: (
     cb: (t: { [key: string]: Task[] }) => { [key: string]: Task[] }
@@ -32,23 +32,47 @@ export const TaskList: FC<P> = ({ setTasks, tasks, toggle }) => {
       return
     }
 
-    const items = reorder(tasks, result.source.index, result.destination.index)
+    const items = reorder(
+      tasks[0],
+      result.source.index,
+      result.destination.index
+    )
     setTasks((b) => ({ ...b, undone: items }))
   }
 
-  console.log(tasks)
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable-1">
         {(provided: any) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            {tasks.map((t, i) => (
-              <Draggable key={t.id} draggableId={t.id} index={i}>
-                {(provided: any) => (
-                  <Item provided={provided} task={t} toggle={toggle} />
-                )}
-              </Draggable>
-            ))}
+            {tasks.map((ts, i) =>
+              ts.length === 1 ? (
+                <Draggable key={ts[0].id} draggableId={ts[0].id} index={i}>
+                  {(provided: any) => (
+                    <Item provided={provided} task={ts[0]} toggle={toggle} />
+                  )}
+                </Draggable>
+              ) : (
+                <Draggable
+                  isDragDisabled={true}
+                  key={ts[0].date!.toString()}
+                  draggableId={ts[0].date!.toString()}
+                  index={i}
+                >
+                  {(provided: any) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      {ts.map((h) => (
+                        <Item task={h} toggle={toggle} />
+                      ))}
+                    </div>
+                  )}
+                </Draggable>
+              )
+            )}
             {provided.placeholder}
           </div>
         )}

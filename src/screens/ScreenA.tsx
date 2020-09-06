@@ -89,6 +89,27 @@ const undoneorder = (t: Task[]) => {
 type DoneTask = { [key: string]: Task[] }
 export const ScreenA: FC<P> = ({ user }) => {
   const [dones, setDones] = useState<DoneTask>({ done: [], undone: [] })
+  const [order, setOrder] = useState<string[]>([])
+  const dateOrder: (number | null)[] = order.map((st) => {
+    if (/^\d{8,8}$/.test(st)) {
+      return new Date(
+        parseInt(st.slice(0, 4), 10),
+        parseInt(st.slice(4, 6), 10) - 1,
+        parseInt(st.slice(6, 8), 10)
+      ).getTime()
+    } else {
+      return null
+    }
+  })
+  const now = new Date()
+  const tod = new Date(
+    now.getFullYear(),
+    now.getMonth() - 1,
+    now.getDate()
+  ).getTime()
+  const revIn: number = dateOrder.reverse().findIndex((r) => r && r <= tod)
+  const beforeTodayIndex: number | null =
+    revIn === -1 ? null : dateOrder.length - revIn - 1
 
   const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({
@@ -138,21 +159,80 @@ export const ScreenA: FC<P> = ({ user }) => {
         })
       })
       .catch((e: Error) => console.error(e)) // TODO
+
+    firebase
+      .firestore()
+      .collection('order')
+      .doc(user.uid)
+      .get()
+      .then((doc: any) => {
+        if (doc.exists) {
+          setOrder(doc.data().keysInOrder)
+        } else {
+          // TODO
+        }
+      })
+      .catch((e: Error) => console.error(e)) // TODO
   }, [])
 
   const addTask = async ({ title, date }: { title: string; date?: number }) => {
     try {
       const doc = firebase.firestore().collection('tasks').doc()
-      const now = Date.now()
+      const added = Date.now()
       const ob = {
         done: false,
         title,
         date: date || null,
         userID: user.uid,
-        createdAt: now,
-        activatedAt: now,
+        activatedAt: added,
+        createdAt: added,
       }
       await doc.set(ob)
+      let keysInOrder = [...order]
+
+      if (date) {
+        const dateOb = new Date(date)
+        const dateKey = `${dateOb.getFullYear()}${
+          dateOb.getMonth() + 1
+        }${dateOb.getDate()}`
+        if (dateOrder.indexOf(date) === -1) {
+          if (date > tod) {
+            const plu = dateOrder.findIndex((k) => k && k > date)
+            if (plu > -1) {
+              keysInOrder = [
+                ...keysInOrder.slice(0, plu),
+                dateKey,
+                ...keysInOrder.slice(plu),
+              ]
+            } else {
+              keysInOrder = [...keysInOrder, dateKey]
+            }
+          } else {
+            if (beforeTodayIndex) {
+              // TODO: 一旦雑にやった
+              keysInOrder = [dateKey, ...keysInOrder]
+            } else {
+              keysInOrder = [dateKey, ...keysInOrder]
+            }
+          }
+        }
+      } else {
+        if (beforeTodayIndex) {
+          keysInOrder = [
+            ...keysInOrder.slice(0, beforeTodayIndex + 1),
+            doc.id,
+            ...keysInOrder.slice(beforeTodayIndex + 1),
+          ]
+        } else {
+          keysInOrder = [doc.id, ...keysInOrder]
+        }
+      }
+
+      await firebase
+        .firestore()
+        .collection('order')
+        .doc(user.uid)
+        .set({ keysInOrder })
 
       sett('')
       setdt(undefined)
@@ -219,6 +299,21 @@ export const ScreenA: FC<P> = ({ user }) => {
     }
   }
 
+  const li: Task[][] = []
+  order.map((st) => {
+    if (/^\d{8,8}$/.test(st)) {
+      const ts = new Date(
+        parseInt(st.slice(0, 4), 10),
+        parseInt(st.slice(4, 6), 10) - 1,
+        parseInt(st.slice(6, 8), 10)
+      ).getTime()
+      li.push(dones.undone.filter((t) => t.date && t.date === ts))
+    }
+
+    const t = dones.undone.find((t) => t.id === st)
+    if (t) li.push([t])
+  })
+
   return (
     <>
       <Calendar handleDate={handleDate} />
@@ -274,9 +369,7 @@ export const ScreenA: FC<P> = ({ user }) => {
         </FAB>
       )}
 
-      {!addMode && (
-        <TaskList setTasks={setDones} tasks={dones.undone} toggle={toggle} />
-      )}
+      {!addMode && <TaskList setTasks={setDones} tasks={li} toggle={toggle} />}
       <button onClick={signOut} className="button ">
         sign out
       </button>

@@ -7,7 +7,7 @@ import { DraggableProvided } from 'react-beautiful-dnd'
 interface I {
   task: Task
   toggle: (t: Task) => void
-  provided: DraggableProvided
+  provided?: DraggableProvided
 }
 
 // This is undone
@@ -27,9 +27,9 @@ export const Item: FC<I> = ({ task, toggle, provided }) => {
       onExited={() => toggle(task)}
     >
       <div
-        ref={provided.innerRef}
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
+        ref={provided?.innerRef}
+        {...provided?.draggableProps}
+        {...provided?.dragHandleProps}
         className={`field my-node`}
       >
         {!s && (
@@ -43,6 +43,7 @@ export const Item: FC<I> = ({ task, toggle, provided }) => {
           </span>
         )}
         {task.title}
+        {task.date}
       </div>
     </CSSTransition>
   )

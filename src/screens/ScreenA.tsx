@@ -307,7 +307,14 @@ export const ScreenA: FC<P> = ({ user }) => {
         </FAB>
       )}
 
-      {!addMode && <TaskList setTasks={setDones} tasks={li} toggle={toggle} />}
+      {!addMode && (
+        <TaskList
+          order={order}
+          setTasks={setOrder}
+          tasks={li}
+          toggle={toggle}
+        />
+      )}
       <button onClick={signOut} className="button ">
         sign out
       </button>

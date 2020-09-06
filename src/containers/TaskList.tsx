@@ -7,22 +7,17 @@ import { Item } from 'src/components/Task'
 interface P {
   tasks: Task[][]
   toggle: (t: Task) => void
-  setTasks: (
-    cb: (t: { [key: string]: Task[] }) => { [key: string]: Task[] }
-  ) => void
+  setTasks: (k: string[]) => void
+  order: string[]
 }
-const reorder = (
-  list: Task[],
-  startIndex: number,
-  endIndex: number
-): Task[] => {
+const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
   const result = Array.from(list)
   const [removed] = result.splice(startIndex, 1)
   result.splice(endIndex, 0, removed)
 
   return result
 }
-export const TaskList: FC<P> = ({ setTasks, tasks, toggle }) => {
+export const TaskList: FC<P> = ({ order, setTasks, tasks, toggle }) => {
   const onDragEnd = (result: any) => {
     if (!result.destination) {
       return
@@ -32,12 +27,8 @@ export const TaskList: FC<P> = ({ setTasks, tasks, toggle }) => {
       return
     }
 
-    const items = reorder(
-      tasks[0],
-      result.source.index,
-      result.destination.index
-    )
-    setTasks((b) => ({ ...b, undone: items }))
+    const items = reorder(order, result.source.index, result.destination.index)
+    setTasks(items)
   }
 
   return (

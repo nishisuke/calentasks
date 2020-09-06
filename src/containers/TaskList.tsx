@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react'
-import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd'
 
 import { Task } from 'src/types/Task'
@@ -37,22 +36,19 @@ export const TaskList: FC<P> = ({ setTasks, tasks, toggle }) => {
     setTasks((b) => ({ ...b, undone: items }))
   }
 
+  console.log(tasks)
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable-1">
         {(provided: any) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <TransitionGroup exit={true} component={null}>
-              {tasks.map((t, i) => (
-                <CSSTransition key={t.id} timeout={2000} classNames="my-node">
-                  <Draggable key={t.id} draggableId={t.id} index={i}>
-                    {(provided: any) => (
-                      <Item provided={provided} task={t} toggle={toggle} />
-                    )}
-                  </Draggable>
-                </CSSTransition>
-              ))}
-            </TransitionGroup>
+            {tasks.map((t, i) => (
+              <Draggable key={t.id} draggableId={t.id} index={i}>
+                {(provided: any) => (
+                  <Item provided={provided} task={t} toggle={toggle} />
+                )}
+              </Draggable>
+            ))}
             {provided.placeholder}
           </div>
         )}

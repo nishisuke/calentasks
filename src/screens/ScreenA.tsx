@@ -24,16 +24,16 @@ interface P {
 }
 
 const calundoneorder = (a: Task, b: Task) => {
-  return a.date === b.date ? b.activatedAt - a.activatedAt : a.date - b.date
+  return a.date === b.date ? b.activatedAt - a.activatedAt : a.date! - b.date!
 }
 
 const calnoundoneorder = (cal: Task, nocal: Task, now: number) => {
   if (nocal.orderDate) {
-    return cal.date === nocal.orderDate ? -1 : cal.date - nocal.orderDate
+    return cal.date! === nocal.orderDate ? -1 : cal.date! - nocal.orderDate
   } else {
-    return cal.date === now
+    return cal.date! === now
       ? nocal.activatedAt - cal.activatedAt
-      : cal.date - now
+      : cal.date! - now
   }
 }
 
@@ -45,29 +45,32 @@ const calnoundoneorder = (cal: Task, nocal: Task, now: number) => {
 //  doneAt?: number
 const undoneorder = (t: Task[]) => {
   const copy = [...t]
+  const now = Date.now() // TODO: 00:00:00
   copy.sort((a: Task, b: Task) => {
-    if (a.date && b.data) {
+    if (a.date && b.date) {
       return calundoneorder(a, b)
     }
     if (a.date && !b.date) {
-      return calnoundoneorder(a, b)
+      return calnoundoneorder(a, b, now)
     }
     if (!a.date && b.date) {
-      return -1 * calnoundoneorder(a, b)
+      return -1 * calnoundoneorder(a, b, now)
     }
     if (!a.date && !b.date) {
       if (a.orderDate && b.orderDate) {
         return a.orderDate === b.orderDate
-          ? a.orderDateIndex - b.orderDateIndex
+          ? a.orderDateIndex! - b.orderDateIndex!
           : a.orderDate - b.orderDate
       }
       if (a.orderDate && !b.orderDate) {
-        return a.date === now ? b.activatedAt - a.activatedAt : a.date - now
+        return a.orderDate! === now
+          ? b.activatedAt - a.activatedAt
+          : a.orderDate! - now
       }
       if (!a.orderDate && b.orderDate) {
-        return b.date === now
+        return b.orderDate! === now
           ? b.activatedAt - a.activatedAt
-          : now - b.orderDate
+          : now - b.orderDate!
       }
       if (!a.orderDate && !b.orderDate) {
         return b.activatedAt - a.activatedAt
@@ -128,10 +131,9 @@ export const ScreenA: FC<P> = ({ user }) => {
         })
 
         const done = arr.filter((b) => b.done)
-        done.sort(undoneorder)
         const undone = arr.filter((b) => !b.done)
         setDones({
-          done,
+          done: undoneorder(done),
           undone,
         })
       })
@@ -157,12 +159,14 @@ export const ScreenA: FC<P> = ({ user }) => {
       setAnimTrigger({ in: !animTrigger.in, title })
       const task: Task = { ...ob, id: doc.id, date: date }
 
-      const undone = [...b.undone, task]
-      undone.sort(undoneorder)
-      setDones((b) => ({
-        ...b,
-        undone,
-      }))
+      setDones((b) => {
+        const undone = [...b.undone, task]
+
+        return {
+          ...b,
+          undone: undoneorder(undone),
+        }
+      })
     } catch (e) {
       // TODO: e
       alert('fail')
@@ -199,15 +203,14 @@ export const ScreenA: FC<P> = ({ user }) => {
         const removed = removeArr.filter((e) => e.id !== t.id)
         const added = [...addedArr, toggled]
 
-        t.done ? added.sort(undoneorder) : null
         return t.done
           ? {
               done: removed,
-              undone: added,
+              undone: undoneorder(added),
             }
           : {
               done: added,
-              undone: removed,
+              undone: undoneorder(removed),
             }
       })
     } catch (e) {

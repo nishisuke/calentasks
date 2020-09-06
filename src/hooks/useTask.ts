@@ -3,6 +3,7 @@ import { Task } from 'src/types/Task'
 import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
+import { CalendarDate } from 'src/entities/CalendarDate'
 
 export const useTask = (user: AuthedUser) => {
   const [dones, setDones] = useState<Task[]>([])
@@ -29,14 +30,20 @@ export const useTask = (user: AuthedUser) => {
   const beforeTodayIndex: number | null =
     revIn === -1 ? null : dateOrder.length - revIn - 1
 
-  const addTask = async ({ title, date }: { title: string; date?: number }) => {
+  const addTask = async ({
+    title,
+    date,
+  }: {
+    title: string
+    date?: CalendarDate
+  }) => {
     try {
       const doc = firebase.firestore().collection('tasks').doc()
       const added = Date.now()
       const ob = {
         done: false,
         title,
-        date: date || null,
+        date: date?.ts || null,
         userID: user.uid,
         activatedAt: added,
         createdAt: added,
@@ -46,13 +53,10 @@ export const useTask = (user: AuthedUser) => {
       let keysInOrder = [...order]
 
       if (date) {
-        const dateOb = new Date(date)
-        const dateKey = `${dateOb.getFullYear()}${`0${
-          dateOb.getMonth() + 1
-        }`.slice(-2)}${`0${dateOb.getDate()}`.slice(-2)}`
-        if (dateOrder.indexOf(date) === -1) {
-          if (date > tod) {
-            const plu = dateOrder.findIndex((k) => k && k > date)
+        const dateKey = date.key
+        if (dateOrder.indexOf(date.ts) === -1) {
+          if (date.ts > tod) {
+            const plu = dateOrder.findIndex((k) => k && k > date.ts)
             if (plu > -1) {
               keysInOrder = [
                 ...keysInOrder.slice(0, plu),
@@ -90,7 +94,7 @@ export const useTask = (user: AuthedUser) => {
         .set({ keysInOrder })
 
       setOrder(keysInOrder)
-      const task: Task = { ...ob, id: doc.id, date: date }
+      const task: Task = { ...ob, id: doc.id, date: date?.ts }
 
       setDones((b) => [...b, task])
     } catch (e) {
@@ -156,6 +160,7 @@ export const useTask = (user: AuthedUser) => {
     dones.filter((t) => !t.done).length !==
     tasksGroups.reduce((ac, arr) => [...ac, ...arr], []).length
   ) {
+    console.log(dones)
     console.log(tasksGroups.reduce((ac, arr) => [...ac, ...arr], []).length)
     console.log(tasksGroups)
     console.log(order)

@@ -9,6 +9,7 @@ import { AuthedUser } from 'src/types/AuthedUser'
 import firebase from 'firebase/app'
 import { signOut } from 'src/services/authService'
 import { useTask } from 'src/hooks/useTask'
+import { CalendarDate } from 'src/entities/CalendarDate'
 
 interface FP {
   onClick: () => void
@@ -30,7 +31,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     title: '',
   })
   const [title, sett] = useState('')
-  const [d, setdt] = useState<number | undefined>(undefined)
+  const [d, setdt] = useState<CalendarDate | undefined>(undefined)
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -40,17 +41,14 @@ export const ScreenA: FC<P> = ({ user }) => {
     if (addMode) inputRef.current?.focus()
   }, [addMode])
 
-  const setDate = (y: number, m: number, d: number) =>
-    setdt(new Date(y, m - 1, d).getTime())
-
   const handleDate = addMode
-    ? setDate
-    : (y: number, m: number, d: number) => {
-        setDate(y, m, d)
+    ? setdt
+    : (cald: CalendarDate) => {
+        setdt(cald)
         setAddMode(true)
       }
 
-  const addTask = async (ob: { title: string; date?: number }) => {
+  const addTask = async (ob: { title: string; date?: CalendarDate }) => {
     await _add(ob)
     setAnimTrigger({ in: !animTrigger.in, title: ob.title })
     sett('')
@@ -62,7 +60,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     date,
   }: {
     title: string
-    date?: number
+    date?: CalendarDate
   }) => {
     if (title) {
       addTask({ title, date }).then(() => setAddMode(false))
@@ -99,8 +97,7 @@ export const ScreenA: FC<P> = ({ user }) => {
           {d && (
             <div className="field ">
               <p className="help">
-                {new Date(d).getFullYear()}/{new Date(d).getMonth() + 1}/
-                {new Date(d).getDate()}
+                {d.y}/{d.m}/{d.d}
               </p>
             </div>
           )}

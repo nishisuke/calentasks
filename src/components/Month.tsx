@@ -1,23 +1,24 @@
 import React, { FC } from 'react'
+import { CalendarDate } from 'src/entities/CalendarDate'
 
 interface M {
-  startDate: Date
-  handleDate?: (y: number, m: number, d: number) => void
+  startDate: CalendarDate
+  handleDate?: (cal: CalendarDate) => void
 }
 
 const times = (n: number) => Array(n).fill(null)
 const getLastDate = (y: number, m: number) => new Date(y, m, 0).getDate()
 
-const getWeeks = (startDate: Date, limit: number) => {
-  const year = startDate.getFullYear()
-  const month = startDate.getMonth() + 1
+const getWeeks = (startDate: CalendarDate, limit: number) => {
+  const year = startDate.y
+  const month = startDate.m
   const prevMonth = month - 1
   const lastDate = getLastDate(year, month)
   const prevMonthLastDate = getLastDate(year, prevMonth)
 
-  const prevMonthDatesCount = startDate.getDay()
+  const prevMonthDatesCount = startDate.date.getDay()
   const prevMonthDates = times(prevMonthDatesCount).map(
-    (_, i) => prevMonthLastDate - prevMonthDatesCount + i
+    (_, i) => prevMonthLastDate - prevMonthDatesCount + i + 1
   )
 
   const dates = times(lastDate).map((_, i) => i + 1)
@@ -33,11 +34,9 @@ const getWeeks = (startDate: Date, limit: number) => {
 }
 
 export const Month: FC<M> = ({ startDate, handleDate }) => {
-  // console.log(startDate.getMonth() + 1, 'Month')
-
   return (
     <div className="swipe-page">
-      Month: {startDate.getMonth() + 1}
+      Month: {startDate.m}
       {getWeeks(startDate, 5).map((week, i) => (
         <div className="cal-week" key={i}>
           {week.map((date) => (
@@ -46,9 +45,7 @@ export const Month: FC<M> = ({ startDate, handleDate }) => {
                 handleDate
                   ? () =>
                       handleDate(
-                        startDate.getFullYear(),
-                        startDate.getMonth() + 1,
-                        date
+                        new CalendarDate(startDate.y, startDate.m, date)
                       )
                   : undefined
               }

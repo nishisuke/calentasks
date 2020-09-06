@@ -54,6 +54,7 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
+                        {ts[0].date}
                         {ts.map((h) => (
                           <Item key={h.id} task={h} done={done} />
                         ))}

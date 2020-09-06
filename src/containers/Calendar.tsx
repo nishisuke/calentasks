@@ -2,6 +2,7 @@ import React, { FC, useContext } from 'react'
 import ReactSwipe from 'react-swipe'
 import { CalendarContext } from 'src/contexts/calendar'
 import { MonthContainer } from 'src/containers/MonthContainer'
+import { CalendarDate } from 'src/entities/CalendarDate'
 
 const array = [0, 0, 0] // must be 3以上の奇数
 const loopSwipeDirection = (be: number, af: number, loop: number) => {
@@ -14,7 +15,7 @@ const loopSwipeDirection = (be: number, af: number, loop: number) => {
   return af - be
 }
 interface P {
-  handleDate?: (y: number, m: number, d: number) => void
+  handleDate?: (cald: CalendarDate) => void
 }
 export const Calendar: FC<P> = ({ handleDate }) => {
   const { calendar, setCalendar } = useContext(CalendarContext)

@@ -28,18 +28,9 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
         {(provided: any) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             {tasksGroups.map((ts, i) => {
-              if (ts.length === 0) {
+              if (ts.length < 1) {
                 return null
-              } else if (ts.length === 1) {
-                const id = ts[0].id
-                return (
-                  <Draggable key={id} draggableId={id} index={i}>
-                    {(provided: any) => (
-                      <Item provided={provided} task={ts[0]} done={done} />
-                    )}
-                  </Draggable>
-                )
-              } else {
+              } else if (ts[0].date) {
                 const idDrag = ts[0].date!.toString()
                 return (
                   <Draggable
@@ -54,11 +45,20 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        {ts[0].date}
+                        {idDrag}
                         {ts.map((h) => (
                           <Item key={h.id} task={h} done={done} />
                         ))}
                       </div>
+                    )}
+                  </Draggable>
+                )
+              } else {
+                const id = ts[0].id
+                return (
+                  <Draggable key={id} draggableId={id} index={i}>
+                    {(provided: any) => (
+                      <Item provided={provided} task={ts[0]} done={done} />
                     )}
                   </Draggable>
                 )

@@ -26,12 +26,17 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable-1">
         {(provided: any) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
+          <div
+            className="has-background-grey-darker"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
             {tasksGroups.map((ts, i) => {
               if (ts.length < 1) {
                 return null
               } else if (ts[0].date) {
                 const idDrag = ts[0].date!.toString()
+                const da = new Date(ts[0].date)
                 return (
                   <Draggable
                     isDragDisabled={true}
@@ -45,7 +50,9 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        {idDrag}
+                        <span className="has-text-grey-light">
+                          {da.getMonth() + 1}/{da.getDate()}
+                        </span>
                         {ts.map((h) => (
                           <Item key={h.id} task={h} done={done} />
                         ))}

@@ -1,6 +1,7 @@
 $beige-lighter: #EFF0EB;
 $box-padding: 0.5rem;
 $box-background-color: $beige-lighter;
+$pink: #FA7C91;
 
 @import '~bulma/bulma.sass';
 @import '~bulma-floating-button/dist/css/bulma-floating-button.min.css';
@@ -78,4 +79,7 @@ body {
   &:not(:last-child) {
     margin-bottom: 0.25rem;
   }
+}
+.addbutton {
+  background-color: $pink;
 }

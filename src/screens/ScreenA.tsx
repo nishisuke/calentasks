@@ -16,7 +16,7 @@ interface FP {
 }
 
 const FAB: FC<FP> = ({ onClick, children }) => (
-  <button onClick={onClick} className="button is-floating is-small is-primary">
+  <button onClick={onClick} className="button is-floating is-small addbutton">
     {children}
   </button>
 )

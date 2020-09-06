@@ -6,12 +6,12 @@ import { DraggableProvided } from 'react-beautiful-dnd'
 
 interface I {
   task: Task
-  toggle: (t: Task) => void
+  done: (t: Task) => void
   provided?: DraggableProvided
 }
 
 // This is undone
-export const Item: FC<I> = ({ task, toggle, provided }) => {
+export const Item: FC<I> = ({ task, done, provided }) => {
   const [s, sb] = useState(false)
   const click = () => {
     sb(true)
@@ -24,7 +24,7 @@ export const Item: FC<I> = ({ task, toggle, provided }) => {
       enter={false}
       timeout={2000}
       classNames="my-node"
-      onExited={() => toggle(task)}
+      onExited={() => done(task)}
     >
       <div
         ref={provided?.innerRef}

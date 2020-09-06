@@ -309,7 +309,7 @@ export const ScreenA: FC<P> = ({ user }) => {
 
       {!addMode && (
         <TaskList
-          setTasks={(a: number, b: number) => {
+          setOrder={(a: number, b: number) => {
             const reorder = <T,>(
               list: T[],
               startIndex: number,

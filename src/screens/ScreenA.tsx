@@ -8,6 +8,7 @@ import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
 import { signOut } from 'src/services/authService'
+import { useTask } from 'src/hooks/useTask'
 
 interface FP {
   onClick: () => void
@@ -23,39 +24,38 @@ interface P {
   user: AuthedUser
 }
 
-type DoneTask = { [key: string]: Task[] }
 export const ScreenA: FC<P> = ({ user }) => {
-  const [dones, setDones] = useState<DoneTask>({ done: [], undone: [] })
-  const [order, setOrder] = useState<string[]>([])
-  const dateOrder: (number | null)[] = order.map((st) => {
-    if (/^\d{8,8}$/.test(st)) {
-      return new Date(
-        parseInt(st.slice(0, 4), 10),
-        parseInt(st.slice(4, 6), 10) - 1,
-        parseInt(st.slice(6, 8), 10)
-      ).getTime()
-    } else {
-      return null
-    }
-  })
-  const now = new Date()
-  const tod = new Date(
-    now.getFullYear(),
-    now.getMonth() - 1,
-    now.getDate()
-  ).getTime()
-  const revIn: number = dateOrder.reverse().findIndex((r) => r && r <= tod)
-  const beforeTodayIndex: number | null =
-    revIn === -1 ? null : dateOrder.length - revIn - 1
-
-  const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({
     in: false,
     title: '',
   })
-  const inputRef = useRef<HTMLInputElement>(null)
   const [t, sett] = useState('')
   const [d, setdt] = useState<number | undefined>(undefined)
+  const [addMode, setAddMode] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const { addTask: _add, moveItem, tasksGroups, toggle } = useTask(user)
+
+  useEffect(() => {
+    if (addMode) inputRef.current?.focus()
+  }, [addMode])
+
+  const setDate = (y: number, m: number, d: number) =>
+    setdt(new Date(y, m - 1, d).getTime())
+
+  const handleDate = addMode
+    ? setDate
+    : (y: number, m: number, d: number) => {
+        setDate(y, m, d)
+        setAddMode(true)
+      }
+
+  const addTask = async (ob: { title: string; date?: number }) => {
+    await _add(ob)
+    setAnimTrigger({ in: !animTrigger.in, title: ob.title })
+    sett('')
+    setdt(undefined)
+  }
 
   const addAndEnd = async ({
     title,
@@ -71,186 +71,6 @@ export const ScreenA: FC<P> = ({ user }) => {
       setAddMode(false)
     }
   }
-  useEffect(() => {
-    firebase
-      .firestore()
-      .collection('tasks')
-      .where('userID', '==', user.uid)
-      .get()
-      .then(function (querySnapshot: any) {
-        const arr: Task[] = []
-        querySnapshot.forEach(function (doc: any) {
-          const data = doc.data()
-          arr.push({
-            ...data,
-            id: doc.id,
-            date: data?.date || undefined,
-          })
-        })
-
-        const done = arr.filter((b) => b.done)
-        const undone = arr.filter((b) => !b.done)
-        setDones({
-          done,
-          undone,
-        })
-      })
-      .catch((e: Error) => console.error(e)) // TODO
-
-    firebase
-      .firestore()
-      .collection('order')
-      .doc(user.uid)
-      .get()
-      .then((doc: any) => {
-        if (doc.exists) {
-          setOrder(doc.data().keysInOrder)
-        } else {
-          // TODO
-        }
-      })
-      .catch((e: Error) => console.error(e)) // TODO
-  }, [])
-
-  const addTask = async ({ title, date }: { title: string; date?: number }) => {
-    try {
-      const doc = firebase.firestore().collection('tasks').doc()
-      const added = Date.now()
-      const ob = {
-        done: false,
-        title,
-        date: date || null,
-        userID: user.uid,
-        activatedAt: added,
-        createdAt: added,
-      }
-      await doc.set(ob)
-      let keysInOrder = [...order]
-
-      if (date) {
-        const dateOb = new Date(date)
-        const dateKey = `${dateOb.getFullYear()}${
-          dateOb.getMonth() + 1
-        }${dateOb.getDate()}`
-        if (dateOrder.indexOf(date) === -1) {
-          if (date > tod) {
-            const plu = dateOrder.findIndex((k) => k && k > date)
-            if (plu > -1) {
-              keysInOrder = [
-                ...keysInOrder.slice(0, plu),
-                dateKey,
-                ...keysInOrder.slice(plu),
-              ]
-            } else {
-              keysInOrder = [...keysInOrder, dateKey]
-            }
-          } else {
-            if (beforeTodayIndex) {
-              // TODO: 一旦雑にやった
-              keysInOrder = [dateKey, ...keysInOrder]
-            } else {
-              keysInOrder = [dateKey, ...keysInOrder]
-            }
-          }
-        }
-      } else {
-        if (beforeTodayIndex) {
-          keysInOrder = [
-            ...keysInOrder.slice(0, beforeTodayIndex + 1),
-            doc.id,
-            ...keysInOrder.slice(beforeTodayIndex + 1),
-          ]
-        } else {
-          keysInOrder = [doc.id, ...keysInOrder]
-        }
-      }
-
-      await firebase
-        .firestore()
-        .collection('order')
-        .doc(user.uid)
-        .set({ keysInOrder })
-
-      setOrder(keysInOrder)
-      sett('')
-      setdt(undefined)
-      setAnimTrigger({ in: !animTrigger.in, title })
-      const task: Task = { ...ob, id: doc.id, date: date }
-
-      setDones((b) => {
-        const undone = [...b.undone, task]
-
-        return {
-          ...b,
-          undone,
-        }
-      })
-    } catch (e) {
-      // TODO: e
-      alert('fail')
-    }
-  }
-
-  useEffect(() => {
-    if (addMode) inputRef.current?.focus()
-  }, [addMode])
-
-  const setDate = (y: number, m: number, d: number) =>
-    setdt(new Date(y, m - 1, d).getTime())
-  const handleDate = addMode
-    ? setDate
-    : (y: number, m: number, d: number) => {
-        setDate(y, m, d)
-        setAddMode(true)
-      }
-
-  const toggle = async (t: Task) => {
-    try {
-      const doc = firebase.firestore().collection('tasks').doc(t.id)
-      const now = Date.now()
-      const upda = t.done
-        ? { done: !t.done, activatedAt: now }
-        : { done: !t.done, doneAt: now }
-      await doc.set(upda, { merge: true })
-
-      setDones((b) => {
-        const removeArr = t.done ? b.done : b.undone
-        const addedArr = !t.done ? b.done : b.undone
-        const tar: Task = removeArr.find((e) => e.id === t.id)!
-        const toggled = { ...tar, ...upda }
-        const removed = removeArr.filter((e) => e.id !== t.id)
-        const added = [...addedArr, toggled]
-
-        return t.done
-          ? {
-              done: removed,
-              undone: added,
-            }
-          : {
-              done: added,
-              undone: removed,
-            }
-      })
-    } catch (e) {
-      // TODO: e
-      alert('fail')
-    }
-  }
-
-  const li: Task[][] = []
-  order.map((st) => {
-    if (/^\d{8,8}$/.test(st)) {
-      const ts = new Date(
-        parseInt(st.slice(0, 4), 10),
-        parseInt(st.slice(4, 6), 10) - 1,
-        parseInt(st.slice(6, 8), 10)
-      ).getTime()
-      li.push(dones.undone.filter((t) => t.date && t.date === ts))
-    }
-
-    const t = dones.undone.find((t) => t.id === st)
-    if (t) li.push([t])
-  })
 
   return (
     <>
@@ -308,25 +128,7 @@ export const ScreenA: FC<P> = ({ user }) => {
       )}
 
       {!addMode && (
-        <TaskList
-          setOrder={(a: number, b: number) => {
-            const reorder = <T,>(
-              list: T[],
-              startIndex: number,
-              endIndex: number
-            ): T[] => {
-              const result = [...list]
-              const [removed] = result.splice(startIndex, 1)
-              result.splice(endIndex, 0, removed)
-
-              return result
-            }
-
-            setOrder(reorder(order, a, b))
-          }}
-          tasksGroups={li}
-          done={toggle}
-        />
+        <TaskList setOrder={moveItem} tasksGroups={tasksGroups} done={toggle} />
       )}
       <button onClick={signOut} className="button ">
         sign out

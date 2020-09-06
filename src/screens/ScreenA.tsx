@@ -22,8 +22,11 @@ const FAB: FC<FP> = ({ onClick, children }) => (
 interface P {
   user: AuthedUser
 }
+
+type DoneTask = { [key: string]: Task[] }
 export const ScreenA: FC<P> = ({ user }) => {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [dones, setDones] = useState<DoneTask>({ done: [], undone: [] })
+
   const [addMode, setAddMode] = useState(false)
   const [animTrigger, setAnimTrigger] = useState({
     in: false,
@@ -63,7 +66,11 @@ export const ScreenA: FC<P> = ({ user }) => {
             date: data?.date || undefined,
           })
         })
-        setTasks(arr)
+
+        setDones({
+          done: arr.filter((b) => b.done),
+          undone: arr.filter((b) => !b.done),
+        })
       })
       .catch((e: Error) => console.error(e)) // TODO
   }, [])
@@ -83,7 +90,10 @@ export const ScreenA: FC<P> = ({ user }) => {
       setdt(undefined)
       setAnimTrigger({ in: !animTrigger.in, title })
       const task: Task = { ...ob, id: doc.id, date: date }
-      setTasks((b) => [...b, task])
+      setDones((b) => ({
+        ...b,
+        undone: [...b.undone, task],
+      }))
     } catch (e) {
       // TODO: e
       alert('fail')
@@ -108,12 +118,22 @@ export const ScreenA: FC<P> = ({ user }) => {
       const doc = firebase.firestore().collection('tasks').doc(t.id)
       await doc.set({ done: !t.done }, { merge: true })
 
-      setTasks((b) => {
-        const i: number = b.findIndex((e) => e.id === t.id)
-        const tar: Task = b[i]
-        const copy = [...b]
-        copy[i] = { ...tar, done: true }
-        return copy
+      setDones((b) => {
+        const removeArr = t.done ? b.done : b.undone
+        const addedArr = !t.done ? b.done : b.undone
+        const tar: Task = removeArr.find((e) => e.id === t.id)!
+        const toggled = { ...tar, done: !tar.done }
+        const removed = removeArr.filter((e) => e.id !== t.id)
+        const added = [...addedArr, toggled]
+        return t.done
+          ? {
+              done: removed,
+              undone: added,
+            }
+          : {
+              done: added,
+              undone: removed,
+            }
       })
     } catch (e) {
       // TODO: e
@@ -176,7 +196,9 @@ export const ScreenA: FC<P> = ({ user }) => {
         </FAB>
       )}
 
-      {!addMode && <TaskList tasks={tasks} toggle={toggle} />}
+      {!addMode && (
+        <TaskList setTasks={setDones} tasks={dones.undone} toggle={toggle} />
+      )}
       <button onClick={signOut} className="button ">
         sign out
       </button>

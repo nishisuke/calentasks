@@ -16,6 +16,7 @@ export const Item: FC<I> = ({ task, toggle, provided }) => {
   const click = () => {
     sb(true)
   }
+  // TODO; onexited　完了に失敗しました 2020/02/21 12:30
   return (
     <CSSTransition
       in={!s}

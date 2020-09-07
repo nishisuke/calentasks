@@ -19,6 +19,7 @@
     "react-dom": "^16.13.1",
     "react-swipe": "^6.0.4",
     "react-transition-group": "^4.4.1",
+    "scroll-out": "^2.2.12",
     "swipe-js-iso": "^2.1.5"
   },
   "devDependencies": {

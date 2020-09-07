@@ -106,7 +106,18 @@ export const ScreenA: FC<P> = ({ user }) => {
 
   return (
     <>
-      <Calendar tasks={tasks} handleDate={handleDate} />
+      <div>Month: {calendar.displayedMonth}</div>
+      <div className="hoge">
+        <Calendar tasks={tasks} handleDate={handleDate} />
+        {!addMode && (
+          <TaskList
+            doingDone={doingDone}
+            setOrder={moveItem}
+            tasksGroups={tasksGroups}
+            done={toggle}
+          />
+        )}
+      </div>
       {addMode && (
         <>
           <div className="field has-addons">
@@ -162,15 +173,6 @@ export const ScreenA: FC<P> = ({ user }) => {
         <FAB onClick={() => setAddMode(false)}>
           <i className={`fas fa-times`} />
         </FAB>
-      )}
-
-      {!addMode && (
-        <TaskList
-          doingDone={doingDone}
-          setOrder={moveItem}
-          tasksGroups={tasksGroups}
-          done={toggle}
-        />
       )}
       <button onClick={signOut} className="button ">
         sign out

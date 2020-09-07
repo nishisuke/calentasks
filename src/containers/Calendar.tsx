@@ -33,7 +33,7 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
 
   return (
     <ReactSwipe
-      className="swipe"
+      className="swipe scrollout"
       swipeOptions={{
         startSlide: calendar.currentIndex,
         continuous: true,
@@ -44,6 +44,7 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
         wrapper: {
           overflow: 'hidden',
           position: 'relative',
+          height: '100%',
         },
         child: {},
       }}

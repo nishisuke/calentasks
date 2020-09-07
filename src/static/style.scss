@@ -21,6 +21,11 @@ body {
   overflow-y: scroll;
 }
 
+.scrollout {
+  min-height: 120px; // TODO
+  max-height: 320px; // TODO
+  height: calc((1 - var(--scroll-percent-y))*300px);
+}
 .swipe {
   overflow: hidden;
   visibility: hidden;
@@ -30,8 +35,12 @@ body {
   float: left;
   width: 100%;
   position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
 }
 .cal-week {
+  flex: 1;
   display: flex;
 }
 .cal-date {
@@ -73,6 +82,7 @@ body {
   transition: opacity .2s ease-out .7s;
 }
 .tasklist {
+  flex: 1;
   padding: 0 8px;
 }
 .taskbox {
@@ -83,4 +93,9 @@ body {
 .addbutton {
   border-width: 0;
   background-color: $pink;
+}
+.hoge {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 532px;
 }

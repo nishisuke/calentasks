@@ -11,12 +11,16 @@ import { Item } from 'src/components/Task'
 
 interface P {
   tasksGroups: Task[][]
-  done: (t: Task) => void
+  done: (t: Task) => Promise<void>
   setOrder: (a: number, b: number) => void
+  doingDone: boolean
 }
 
-export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
+export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
   const [b, sb] = useState(false)
+  const [a, sa] = useState(false)
+  const disableDrag = doingDone || a
+
   const onDragEnd = (result: any) => {
     sb(false)
     if (!result.destination) {
@@ -90,6 +94,7 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                         </span>
                         {ts.map((h) => (
                           <Item
+                            setDoingDone={sa}
                             key={h.id}
                             task={h}
                             done={done}
@@ -103,7 +108,12 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
               } else {
                 const id = ts[0].id
                 return (
-                  <Draggable key={id} draggableId={id} index={i}>
+                  <Draggable
+                    isDragDisabled={disableDrag}
+                    key={id}
+                    draggableId={id}
+                    index={i}
+                  >
                     {(provided: DraggableProvided) => (
                       <div
                         ref={provided.innerRef}
@@ -111,7 +121,12 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                         {...provided.dragHandleProps}
                         className="box taskbox"
                       >
-                        <Item disableDone={b} task={ts[0]} done={done} />
+                        <Item
+                          setDoingDone={sa}
+                          disableDone={b}
+                          task={ts[0]}
+                          done={done}
+                        />
                       </div>
                     )}
                   </Draggable>

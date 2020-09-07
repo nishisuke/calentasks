@@ -42,7 +42,14 @@ export const ScreenA: FC<P> = ({ user }) => {
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { adding, addTask: _add, moveItem, tasksGroups, toggle } = useTask(user)
+  const {
+    doingDone,
+    adding,
+    addTask: _add,
+    moveItem,
+    tasksGroups,
+    toggle,
+  } = useTask(user)
 
   useEffect(() => {
     if (addMode) inputRef.current?.focus()
@@ -143,7 +150,12 @@ export const ScreenA: FC<P> = ({ user }) => {
       )}
 
       {!addMode && (
-        <TaskList setOrder={moveItem} tasksGroups={tasksGroups} done={toggle} />
+        <TaskList
+          doingDone={doingDone}
+          setOrder={moveItem}
+          tasksGroups={tasksGroups}
+          done={toggle}
+        />
       )}
       <button onClick={signOut} className="button ">
         sign out

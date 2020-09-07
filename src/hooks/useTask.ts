@@ -9,6 +9,7 @@ export const useTask = (user: AuthedUser) => {
   const [dones, setDones] = useState<Task[]>([])
   const [order, setOrder] = useState<string[]>([])
   const [adding, setAdding] = useState(false)
+  const [doingDone, setDoingDone] = useState(false)
 
   const dateOrder: (number | null)[] = order.map((st) => {
     if (/^\d{8,8}$/.test(st)) {
@@ -111,6 +112,7 @@ export const useTask = (user: AuthedUser) => {
   }
 
   const toggle = async (t: Task) => {
+    setDoingDone(true)
     try {
       const doc = firebase.firestore().collection('tasks').doc(t.id)
       const now = Date.now()
@@ -126,15 +128,16 @@ export const useTask = (user: AuthedUser) => {
           d.getMonth() + 1,
           d.getDate()
         )
-        keysInOrder = keysInOrder.filter((b) => b === cald.key)
+        keysInOrder = keysInOrder.filter((b) => b !== cald.key)
       } else {
-        keysInOrder = keysInOrder.filter((b) => b === t.id)
+        keysInOrder = keysInOrder.filter((b) => b !== t.id)
       }
       await firebase
         .firestore()
         .collection('order')
         .doc(user.uid)
         .set({ keysInOrder })
+      setOrder(keysInOrder)
 
       setDones((b) => {
         const tar: Task = dones.find((e) => e.id === t.id)!
@@ -142,7 +145,9 @@ export const useTask = (user: AuthedUser) => {
 
         return [...b.filter((e) => e.id !== t.id), toggled]
       })
+      setDoingDone(false)
     } catch (e) {
+      setDoingDone(false)
       // TODO: e
       alert('fail')
     }
@@ -227,5 +232,6 @@ export const useTask = (user: AuthedUser) => {
     tasksGroups,
     toggle,
     adding,
+    doingDone,
   }
 }

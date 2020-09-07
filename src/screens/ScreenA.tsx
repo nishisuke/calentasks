@@ -56,10 +56,15 @@ export const ScreenA: FC<P> = ({ user }) => {
       }
 
   const addTask = async (ob: { title: string; date?: CalendarDate }) => {
-    await _add(ob)
-    setAnimTrigger({ in: !animTrigger.in, title: ob.title })
-    sett('')
-    setdt(undefined)
+    const text = await _add(ob)
+    if (!text) {
+      setAnimTrigger({ in: !animTrigger.in, title: ob.title })
+      sett('')
+      setdt(undefined)
+    } else {
+      // TODO
+      alert(text)
+    }
   }
 
   const addAndEnd = async ({

@@ -38,6 +38,7 @@ export const useTask = (user: AuthedUser) => {
     title: string
     date?: CalendarDate
   }) => {
+    if (!title) return '入力してください'
     setAdding(true)
     try {
       const doc = firebase.firestore().collection('tasks').doc()
@@ -100,10 +101,12 @@ export const useTask = (user: AuthedUser) => {
 
       setDones((b) => [...b, task])
       setAdding(false)
+      return ''
     } catch (e) {
       setAdding(false)
       // TODO: e
       alert('fail')
+      return '失敗しました'
     }
   }
 

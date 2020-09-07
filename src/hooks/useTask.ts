@@ -8,6 +8,7 @@ import { CalendarDate } from 'src/entities/CalendarDate'
 export const useTask = (user: AuthedUser) => {
   const [dones, setDones] = useState<Task[]>([])
   const [order, setOrder] = useState<string[]>([])
+  const [adding, setAdding] = useState(false)
 
   const dateOrder: (number | null)[] = order.map((st) => {
     if (/^\d{8,8}$/.test(st)) {
@@ -37,6 +38,7 @@ export const useTask = (user: AuthedUser) => {
     title: string
     date?: CalendarDate
   }) => {
+    setAdding(true)
     try {
       const doc = firebase.firestore().collection('tasks').doc()
       const added = Date.now()
@@ -97,7 +99,9 @@ export const useTask = (user: AuthedUser) => {
       const task: Task = { ...ob, id: doc.id, date: date?.ts }
 
       setDones((b) => [...b, task])
+      setAdding(false)
     } catch (e) {
+      setAdding(false)
       // TODO: e
       alert('fail')
     }
@@ -206,5 +210,6 @@ export const useTask = (user: AuthedUser) => {
     moveItem: setO,
     tasksGroups,
     toggle,
+    adding,
   }
 }

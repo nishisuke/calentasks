@@ -13,10 +13,17 @@ import { CalendarDate } from 'src/entities/CalendarDate'
 
 interface FP {
   onClick: () => void
+  adding?: boolean
 }
 
-const FAB: FC<FP> = ({ onClick, children }) => (
-  <button onClick={onClick} className="button is-floating is-small addbutton">
+const FAB: FC<FP> = ({ onClick, children, adding }) => (
+  <button
+    onClick={onClick}
+    className={`button is-floating is-small addbutton ${
+      adding ? 'is-loading' : ''
+    }`}
+    disabled={adding}
+  >
     {children}
   </button>
 )
@@ -35,7 +42,7 @@ export const ScreenA: FC<P> = ({ user }) => {
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { addTask: _add, moveItem, tasksGroups, toggle } = useTask(user)
+  const { adding, addTask: _add, moveItem, tasksGroups, toggle } = useTask(user)
 
   useEffect(() => {
     if (addMode) inputRef.current?.focus()
@@ -88,7 +95,8 @@ export const ScreenA: FC<P> = ({ user }) => {
             <div className="control">
               <button
                 onClick={() => addTask({ title: title, date: d })}
-                className="button"
+                className={`button ${adding ? 'is-loading' : ''}`}
+                disabled={adding}
               >
                 保存
               </button>
@@ -116,7 +124,12 @@ export const ScreenA: FC<P> = ({ user }) => {
         </FAB>
       )}
       {addMode && title && (
-        <FAB onClick={() => addAndEnd({ title: title, date: d })}>OK</FAB>
+        <FAB
+          adding={adding}
+          onClick={() => addAndEnd({ title: title, date: d })}
+        >
+          OK
+        </FAB>
       )}
       {addMode && !title && (
         <FAB onClick={() => setAddMode(false)}>

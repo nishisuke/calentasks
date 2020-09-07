@@ -1,9 +1,11 @@
 import React, { FC } from 'react'
 import { CalendarDate } from 'src/entities/CalendarDate'
+import { Task } from 'src/types/Task'
 
 interface M {
   startDate: CalendarDate
   handleDate?: (cal: CalendarDate) => void
+  tasks: Task[]
 }
 
 const times = (n: number) => Array(n).fill(null)
@@ -33,7 +35,7 @@ const getWeeks = (startDate: CalendarDate, limit: number) => {
   return times(line).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
 }
 
-export const Month: FC<M> = ({ startDate, handleDate }) => {
+export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
   return (
     <div className="swipe-page">
       Month: {startDate.m}
@@ -53,6 +55,15 @@ export const Month: FC<M> = ({ startDate, handleDate }) => {
               key={date}
             >
               {date}
+              {tasks
+                .filter(
+                  (t) =>
+                    t.date ===
+                    new CalendarDate(startDate.y, startDate.m, date).ts
+                )
+                .map((t) => (
+                  <div key={t.id}>{t.title}</div>
+                ))}
             </div>
           ))}
         </div>

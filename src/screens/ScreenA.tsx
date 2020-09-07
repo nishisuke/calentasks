@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useState, useRef } from 'react'
+import React, { FC, useContext, useEffect, useState, useRef } from 'react'
+import { CalendarContext } from 'src/contexts/calendar'
 
 import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'
@@ -41,6 +42,7 @@ export const ScreenA: FC<P> = ({ user }) => {
   const [d, setdt] = useState<CalendarDate | undefined>(undefined)
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { calendar } = useContext(CalendarContext)
 
   const {
     doingDone,
@@ -88,10 +90,23 @@ export const ScreenA: FC<P> = ({ user }) => {
       setAddMode(false)
     }
   }
+  let tasks: Task[] = []
+  const now = new Date()
+  const beg = new Date(
+    now.getFullYear(),
+    calendar.displayedMonth - 1,
+    1
+  ).getTime()
+  const end = new Date(now.getFullYear(), calendar.displayedMonth, 1).getTime()
+  tasksGroups.forEach((l) => {
+    tasks = tasks.concat(
+      l.filter((t) => t.date && !t.done && beg <= t.date && t.date < end)
+    )
+  })
 
   return (
     <>
-      <Calendar handleDate={handleDate} />
+      <Calendar tasks={tasks} handleDate={handleDate} />
       {addMode && (
         <>
           <div className="field has-addons">

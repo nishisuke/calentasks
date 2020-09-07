@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { useCallback, FC, useState } from 'react'
 import {
   Draggable,
   Droppable,
@@ -16,7 +16,9 @@ interface P {
 }
 
 export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
+  const [b, sb] = useState(false)
   const onDragEnd = (result: any) => {
+    sb(false)
     if (!result.destination) {
       return
     }
@@ -27,8 +29,19 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
     setOrder(result.source.index, result.destination.index)
   }
 
+  const onBeforeCapture = useCallback(() => {
+    sb(true)
+  }, [b])
+  const onBeforeDragStart = useCallback(() => {}, [])
+  const onDragStart = useCallback(() => {}, [])
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext
+      onBeforeCapture={onBeforeCapture}
+      onBeforeDragStart={onBeforeDragStart}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
       <Droppable droppableId="droppable-1">
         {(provided: any) => (
           <div
@@ -38,7 +51,24 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
           >
             {tasksGroups.map((ts, i) => {
               if (ts.length < 1) {
-                return null
+                // orderの消し忘れなどのため
+                return (
+                  <Draggable
+                    isDragDisabled={true}
+                    key={i.toString()}
+                    draggableId={i.toString()}
+                    index={i}
+                  >
+                    {(provided: DraggableProvided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="is-hidden"
+                      />
+                    )}
+                  </Draggable>
+                )
               } else if (ts[0].date) {
                 const idDrag = ts[0].date!.toString()
                 const da = new Date(ts[0].date)
@@ -59,7 +89,12 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                           {da.getMonth() + 1}/{da.getDate()}
                         </span>
                         {ts.map((h) => (
-                          <Item key={h.id} task={h} done={done} />
+                          <Item
+                            key={h.id}
+                            task={h}
+                            done={done}
+                            disableDone={b}
+                          />
                         ))}
                       </div>
                     )}
@@ -76,7 +111,7 @@ export const TaskList: FC<P> = ({ setOrder, tasksGroups, done }) => {
                         {...provided.dragHandleProps}
                         className="box taskbox"
                       >
-                        <Item task={ts[0]} done={done} />
+                        <Item disableDone={b} task={ts[0]} done={done} />
                       </div>
                     )}
                   </Draggable>

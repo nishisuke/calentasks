@@ -6,10 +6,11 @@ import { Task } from 'src/types/Task'
 interface I {
   task: Task
   done: (t: Task) => void
+  disableDone: boolean
 }
 
 // This is undone
-export const Item: FC<I> = ({ task, done }) => {
+export const Item: FC<I> = ({ task, done, disableDone }) => {
   const [s, sb] = useState(false)
   const click = () => {
     sb(true)
@@ -25,12 +26,12 @@ export const Item: FC<I> = ({ task, done }) => {
       onExited={() => done(task)}
     >
       <div className={`field my-node`}>
-        {!s && (
+        {!disableDone && !s && (
           <span onClick={click}>
             <i className="far fa-circle" />
           </span>
         )}
-        {s && (
+        {!disableDone && s && (
           <span onClick={click}>
             <i className="fas fa-check" />
           </span>

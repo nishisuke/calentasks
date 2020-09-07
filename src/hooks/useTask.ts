@@ -118,6 +118,23 @@ export const useTask = (user: AuthedUser) => {
         ? { done: !t.done, activatedAt: now }
         : { done: !t.done, doneAt: now }
       await doc.set(upda, { merge: true })
+      let keysInOrder = [...order]
+      if (t.date && dones.filter((l) => l.date === t.date).length === 1) {
+        const d = new Date(t.date)
+        const cald = new CalendarDate(
+          d.getFullYear(),
+          d.getMonth() + 1,
+          d.getDate()
+        )
+        keysInOrder = keysInOrder.filter((b) => b === cald.key)
+      } else {
+        keysInOrder = keysInOrder.filter((b) => b === t.id)
+      }
+      await firebase
+        .firestore()
+        .collection('order')
+        .doc(user.uid)
+        .set({ keysInOrder })
 
       setDones((b) => {
         const tar: Task = dones.find((e) => e.id === t.id)!
@@ -167,10 +184,6 @@ export const useTask = (user: AuthedUser) => {
     dones.filter((t) => !t.done).length !==
     tasksGroups.reduce((ac, arr) => [...ac, ...arr], []).length
   ) {
-    console.log(dones)
-    console.log(tasksGroups.reduce((ac, arr) => [...ac, ...arr], []).length)
-    console.log(tasksGroups)
-    console.log(order)
   }
 
   useEffect(() => {

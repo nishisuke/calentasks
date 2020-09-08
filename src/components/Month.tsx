@@ -37,7 +37,7 @@ const getWeeks = (startDate: CalendarDate, limit: number) => {
 
 export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
   return (
-    <div className="swipe-page">
+    <>
       {getWeeks(startDate, 5).map((week, i) => (
         <div className="cal-week" key={i}>
           {week.map((date) => (
@@ -70,6 +70,6 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
           ))}
         </div>
       ))}
-    </div>
+    </>
   )
 }

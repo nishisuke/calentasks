@@ -43,6 +43,7 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
       style={{ height: '100%' }}
       containerStyle={{ height: '100%' }}
       slideStyle={{ height: '100%' }}
+      slideClassName="swipe-page"
       overscanSlideAfter={1}
       overscanSlideBefore={1}
       index={calendar.currentIndex}

@@ -3,29 +3,33 @@ $box-padding: 0.5rem;
 $box-background-color: $beige-lighter;
 $pink: #FA7C91;
 
-@import '~bulma/bulma.sass';
+@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/base/_all";
+@import "~bulma/sass/elements/_all";
+@import "~bulma/sass/form/_all";
+@import "~bulma/sass/components/_all";
+// @import "~bulma/sass/grid/_all";
+@import "~bulma/sass/helpers/_all";
+// @import "~bulma/sass/layout/_all";
+
 @import '~bulma-floating-button/dist/css/bulma-floating-button.min.css';
 
-html {
-  height: 100%;
-}
-body {
-  height: 100%;
-}
-#app {
-  position: relative;
-  height: 100%;
-}
+//html {
+//  height: 100%;
+//}
+//body {
+//  height: 100%;
+//}
+//#app {
+//  height: 100%;
+//  overflow-y: scroll;
+//}
 .scroll-container {
   height: 100%;
   overflow-y: scroll;
 }
 
-.scrollout {
-  min-height: 120px; // TODO
-  max-height: 320px; // TODO
-  height: calc((1 - var(--scroll-percent-y))*300px);
-}
+
 .swipe {
   overflow: hidden;
   visibility: hidden;
@@ -98,4 +102,46 @@ body {
   display: flex;
   flex-flow: column nowrap;
   height: 532px;
+  position: relative;
+}
+
+
+
+
+//=========
+.header {
+  position: relative;
+  height: 240px;
+}
+.sticky-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 240px;
+  background-color: red;
+}
+.sticky-header[data-scroll="in"] {
+  position: fixed;
+  height: calc((1 - var(--scroll-percent-y) * 2) * 240px);
+  max-height: 240px;
+  min-height: 120px;
+}
+//=========
+.swipesticky {
+  position: relative;
+  height: 240px;
+}
+.scrollout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 240px;
+}
+.scrollout[data-scroll="in"] {
+  position: fixed;
+  height: calc((1 - var(--scroll-percent-y) * 2) * 240px);
+  max-height: 240px;
+  min-height: 120px;
 }

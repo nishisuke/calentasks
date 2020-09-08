@@ -1,4 +1,4 @@
-import React, { FC, useCallback, ReactNode, useEffect, useRef } from 'react'
+import React, { FC, ReactNode, useEffect } from 'react'
 // @ts-ignore
 import ScrollOut from 'scroll-out'
 
@@ -12,27 +12,15 @@ declare global {
   }
 }
 
+const hero = 40
 export const Layout: FC<Props> = ({ page }) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const listener = useCallback(
-    () => (window.currentScrollTop = ref.current?.scrollTop || 0),
-    []
-  )
-
   useEffect(() => {
-    ScrollOut({
-      scrollingElement: '.scroll-container',
+    const so = ScrollOut({
+      offset: hero,
       cssProps: true, // TODO
     })
-    ref.current?.addEventListener('scroll', listener, { passive: true })
-    return () => ref.current?.removeEventListener('scroll', listener, false)
+
+    return so.teardown
   }, [])
-  return (
-    <>
-      <div className="scroll-container" ref={ref}>
-        {page}
-        <div style={{ height: '500px' }} />
-      </div>
-    </>
-  )
+  return <>{page}</>
 }

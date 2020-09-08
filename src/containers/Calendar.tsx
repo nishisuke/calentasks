@@ -32,32 +32,36 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
   }
 
   return (
-    <ReactSwipe
-      className="swipe scrollout"
-      swipeOptions={{
-        startSlide: calendar.currentIndex,
-        continuous: true,
-        callback,
-      }}
-      style={{
-        container: {},
-        wrapper: {
-          overflow: 'hidden',
-          position: 'relative',
-          height: '100%',
-        },
-        child: {},
-      }}
-    >
-      {array.map((_, i) => (
-        <MonthContainer
-          tasks={tasks}
-          handleDate={i === calendar.currentIndex ? handleDate : undefined}
-          key={i}
-          index={i}
-          pages={array.length}
-        />
-      ))}
-    </ReactSwipe>
+    <div className="swipesticky">
+      <div data-scroll className="scrollout">
+        <ReactSwipe
+          className="swipe"
+          swipeOptions={{
+            startSlide: calendar.currentIndex,
+            continuous: true,
+            callback,
+          }}
+          style={{
+            container: {},
+            wrapper: {
+              overflow: 'hidden',
+              position: 'relative',
+              height: '100%',
+            },
+            child: {},
+          }}
+        >
+          {array.map((_, i) => (
+            <MonthContainer
+              tasks={tasks}
+              handleDate={i === calendar.currentIndex ? handleDate : undefined}
+              key={i}
+              index={i}
+              pages={array.length}
+            />
+          ))}
+        </ReactSwipe>
+      </div>
+    </div>
   )
 }

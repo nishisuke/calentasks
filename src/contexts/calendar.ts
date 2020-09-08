@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react'
 export interface Calendar {
-  displayedMonth: number
+  thisMonth: number
   currentIndex: number
 }
 interface CalendarProps {
@@ -9,6 +9,6 @@ interface CalendarProps {
 }
 
 export const CalendarContext = createContext<CalendarProps>({
-  calendar: { displayedMonth: 1, currentIndex: 1 },
+  calendar: { thisMonth: 1, currentIndex: 1 },
   setCalendar: () => {},
 })

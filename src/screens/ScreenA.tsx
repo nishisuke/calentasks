@@ -94,10 +94,14 @@ export const ScreenA: FC<P> = ({ user }) => {
   const now = new Date()
   const beg = new Date(
     now.getFullYear(),
-    calendar.displayedMonth - 1,
+    calendar.thisMonth + calendar.currentIndex - 1,
     1
   ).getTime()
-  const end = new Date(now.getFullYear(), calendar.displayedMonth, 1).getTime()
+  const end = new Date(
+    now.getFullYear(),
+    calendar.thisMonth + calendar.currentIndex,
+    1
+  ).getTime()
   tasksGroups.forEach((l) => {
     tasks = tasks.concat(
       l.filter((t) => t.date && !t.done && beg <= t.date && t.date < end)
@@ -118,7 +122,7 @@ export const ScreenA: FC<P> = ({ user }) => {
   return (
     <>
       <div style={{ height: `${hero}px` }}>
-        Month: {calendar.displayedMonth}
+        Month: {calendar.thisMonth + calendar.currentIndex}
       </div>
       <Calendar tasks={tasks} handleDate={handleDate} />
       {!addMode && (

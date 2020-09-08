@@ -19,9 +19,8 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
 
   const callback = (nextIndex: number, beforeIndex: number) => {
     setCalendar((before) => ({
+      ...before,
       currentIndex: nextIndex,
-      displayedMonth:
-        before.displayedMonth + loopSwipeDirection(beforeIndex, nextIndex),
     }))
   }
 

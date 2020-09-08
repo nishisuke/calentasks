@@ -50,11 +50,11 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
                       )
                   : undefined
               }
-              className="cal-date is-size-7"
+              className="cal-date"
               key={date}
             >
-              <div className="is-size-7">{date}</div>
-              <div className="is-size-7">{date}</div>
+              <div className="cal-num">{date}</div>
+              <div className="cal-title is-size-7">hello</div>
               {tasks
                 .filter(
                   (t) =>

@@ -40,6 +40,9 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
   }
   return (
     <VirtualizeSwipeableViews
+      style={{ height: '100%' }}
+      containerStyle={{ height: '100%' }}
+      slideStyle={{ height: '100%' }}
       overscanSlideAfter={1}
       overscanSlideBefore={1}
       index={calendar.currentIndex}

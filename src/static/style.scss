@@ -32,6 +32,7 @@ $pink: #FA7C91;
   background: red;
 }
 .cal-week {
+  overflow-y: hidden;
   flex: 1;
   display: flex;
 }
@@ -120,20 +121,24 @@ $pink: #FA7C91;
 //=========
 .swipesticky {
   position: relative;
-  height: 240px;
+  height: 300px;
 }
 .scrollout {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 240px;
+  height: 300px;
 }
 .scrollout[data-scroll="in"] {
   position: fixed;
 }
 .hoge[data-scroll="in"] {
-  height: calc((1 - var(--scroll-percent-y) * 2) * 240px);
-  max-height: 240px;
+  height: calc((1 - var(--scroll-percent-y)) * 340px);
+  max-height: 300px;
   min-height: 120px;
+}
+.cal-num {
+}
+.cal-title {
 }

@@ -24,24 +24,12 @@ $pink: #FA7C91;
 //  height: 100%;
 //  overflow-y: scroll;
 //}
-.scroll-container {
-  height: 100%;
-  overflow-y: scroll;
-}
 
-
-.swipe {
-  overflow: hidden;
-  visibility: hidden;
-  position: relative;
-}
 .swipe-page {
-  float: left;
-  width: 100%;
-  position: relative;
   display: flex;
   flex-flow: column nowrap;
   height: 100%;
+  background: red;
 }
 .cal-week {
   flex: 1;

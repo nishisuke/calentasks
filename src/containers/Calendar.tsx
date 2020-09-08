@@ -1,18 +1,13 @@
 import React, { FC, useContext } from 'react'
-import ReactSwipe from 'react-swipe'
 import { CalendarContext } from 'src/contexts/calendar'
 import { MonthContainer } from 'src/containers/MonthContainer'
 import { CalendarDate } from 'src/entities/CalendarDate'
 import { Task } from 'src/types/Task'
+import SwipeableViews from 'react-swipeable-views'
+import { virtualize } from 'react-swipeable-views-utils'
 
 const array = [0, 0, 0] // must be 3以上の奇数
-const loopSwipeDirection = (be: number, af: number, loop: number) => {
-  const d = af - be
-  if (be === 0 && af === loop - 1) {
-    return -1
-  } else if (be === loop - 1 && af === 0) {
-    return 1
-  }
+const loopSwipeDirection = (be: number, af: number) => {
   return af - be
 }
 interface P {
@@ -22,45 +17,36 @@ interface P {
 export const Calendar: FC<P> = ({ handleDate, tasks }) => {
   const { calendar, setCalendar } = useContext(CalendarContext)
 
-  const callback = (nextIndex: number) => {
+  const callback = (nextIndex: number, beforeIndex: number) => {
     setCalendar((before) => ({
       currentIndex: nextIndex,
       displayedMonth:
-        before.displayedMonth +
-        loopSwipeDirection(before.currentIndex, nextIndex, array.length),
+        before.displayedMonth + loopSwipeDirection(beforeIndex, nextIndex),
     }))
   }
 
+  const VirtualizeSwipeableViews = virtualize(SwipeableViews)
+
+  function slideRenderer(params: any) {
+    const { index, key } = params
+    return (
+      <MonthContainer
+        tasks={tasks}
+        handleDate={index === calendar.currentIndex ? handleDate : undefined}
+        key={key}
+        index={index}
+        pages={array.length}
+      />
+    )
+  }
   return (
     <div className="swipesticky">
       <div data-scroll className="scrollout">
-        <ReactSwipe
-          className="swipe"
-          swipeOptions={{
-            startSlide: calendar.currentIndex,
-            continuous: true,
-            callback,
-          }}
-          style={{
-            container: {},
-            wrapper: {
-              overflow: 'hidden',
-              position: 'relative',
-              height: '100%',
-            },
-            child: {},
-          }}
-        >
-          {array.map((_, i) => (
-            <MonthContainer
-              tasks={tasks}
-              handleDate={i === calendar.currentIndex ? handleDate : undefined}
-              key={i}
-              index={i}
-              pages={array.length}
-            />
-          ))}
-        </ReactSwipe>
+        <VirtualizeSwipeableViews
+          index={calendar.currentIndex}
+          onChangeIndex={callback}
+          slideRenderer={slideRenderer}
+        />
       </div>
     </div>
   )

@@ -32,6 +32,10 @@ export const MonthContainer: FC<P> = ({ index, pages, handleDate, tasks }) => {
   } = useContext(CalendarContext)
   const diff = loopRelativeIndex(index, currentIndex, pages)
   const thisYear = new Date().getFullYear()
-  const startDate = new CalendarDate(thisYear, diff + displayedMonth, 1)
+  const startDate = new CalendarDate(
+    thisYear,
+    index + displayedMonth - currentIndex,
+    1
+  )
   return <Month tasks={tasks} handleDate={handleDate} startDate={startDate} />
 }

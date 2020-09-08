@@ -11,6 +11,7 @@ import firebase from 'firebase/app'
 import { signOut } from 'src/services/authService'
 import { useTask } from 'src/hooks/useTask'
 import { CalendarDate } from 'src/entities/CalendarDate'
+import { ScrollOutSticky } from 'src/components/ScrollOutSticky'
 
 interface FP {
   onClick: () => void
@@ -124,7 +125,9 @@ export const ScreenA: FC<P> = ({ user }) => {
       <div style={{ height: `${hero}px` }}>
         Month: {calendar.thisMonth + calendar.currentIndex}
       </div>
-      <Calendar tasks={tasks} handleDate={handleDate} />
+      <ScrollOutSticky>
+        <Calendar tasks={tasks} handleDate={handleDate} />
+      </ScrollOutSticky>
       {!addMode && (
         <TaskList
           doingDone={doingDone}

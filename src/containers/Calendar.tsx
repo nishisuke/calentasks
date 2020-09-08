@@ -39,14 +39,12 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
     )
   }
   return (
-    <div className="swipesticky">
-      <div data-scroll className="scrollout">
-        <VirtualizeSwipeableViews
-          index={calendar.currentIndex}
-          onChangeIndex={callback}
-          slideRenderer={slideRenderer}
-        />
-      </div>
-    </div>
+    <VirtualizeSwipeableViews
+      overscanSlideAfter={1}
+      overscanSlideBefore={1}
+      index={calendar.currentIndex}
+      onChangeIndex={callback}
+      slideRenderer={slideRenderer}
+    />
   )
 }

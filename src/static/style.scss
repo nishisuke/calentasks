@@ -37,6 +37,8 @@ $pink: #FA7C91;
 }
 .cal-date {
   flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
 }
 .task {
   height: 24px;
@@ -129,6 +131,8 @@ $pink: #FA7C91;
 }
 .scrollout[data-scroll="in"] {
   position: fixed;
+}
+.hoge[data-scroll="in"] {
   height: calc((1 - var(--scroll-percent-y) * 2) * 240px);
   max-height: 240px;
   min-height: 120px;

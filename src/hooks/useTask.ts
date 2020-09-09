@@ -106,8 +106,6 @@ export const useTask = (user: AuthedUser) => {
     if (!title) return '入力してください'
     setAdding(true)
     try {
-      // TODO: transac
-
       const db = firebase.firestore()
       const doc = db.collection('tasks').doc()
       const added = Date.now()
@@ -143,12 +141,6 @@ export const useTask = (user: AuthedUser) => {
   const toggle = async (t: Task) => {
     setDoingDone(true)
     try {
-      const doc = firebase.firestore().collection('tasks').doc(t.id)
-      const now = Date.now()
-      const upda = t.done
-        ? { done: !t.done, activatedAt: now }
-        : { done: !t.done, doneAt: now }
-      await doc.set(upda, { merge: true })
       let keysInOrder = [...order]
       if (t.date && dones.filter((l) => l.date === t.date).length === 1) {
         const d = new Date(t.date)
@@ -161,13 +153,18 @@ export const useTask = (user: AuthedUser) => {
       } else {
         keysInOrder = keysInOrder.filter((b) => b !== t.id)
       }
-      await firebase
-        .firestore()
-        .collection('order')
-        .doc(user.uid)
-        .set({ keysInOrder })
-      setOrder(keysInOrder)
+      const orderDoc = db.collection('order').doc(user.uid)
 
+      const db = firebase.firestore()
+      const doc = firebase.firestore().collection('tasks').doc(t.id)
+      const upda = { done: true, doneAt: Date.now() }
+
+      const task = await db.runTransaction(async (transaction) => {
+        await transaction.update(doc, upda)
+        await transaction.set(orderDoc, { keysInOrder })
+      })
+
+      setOrder(keysInOrder)
       setDones((b) => {
         const tar: Task = dones.find((e) => e.id === t.id)!
         const toggled = { ...tar, ...upda }

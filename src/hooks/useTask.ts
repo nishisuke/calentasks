@@ -4,13 +4,25 @@ import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
 import { CalendarDate } from 'src/entities/CalendarDate'
-
-export const useTask = (user: AuthedUser) => {
-  const [dones, setDones] = useState<Task[]>([])
-  const [order, setOrder] = useState<string[]>([])
-  const [adding, setAdding] = useState(false)
-  const [doingDone, setDoingDone] = useState(false)
-
+const aaa = async (
+  title: string,
+  date: CalendarDate | undefined,
+  userID: string
+): Promise<Task> => {
+  const doc = firebase.firestore().collection('tasks').doc()
+  const added = Date.now()
+  const ob = {
+    done: false,
+    title,
+    date: date?.ts || null,
+    userID,
+    activatedAt: added,
+    createdAt: added,
+  }
+  await doc.set(ob)
+  return { ...ob, id: doc.id, date: date?.ts }
+}
+const bbb = (order: string[], key: string, date: CalendarDate | undefined) => {
   const dateOrder: (number | null)[] = order.map((st) => {
     if (/^\d{8,8}$/.test(st)) {
       return new Date(
@@ -28,9 +40,59 @@ export const useTask = (user: AuthedUser) => {
     now.getMonth(),
     now.getDate()
   ).getTime()
+
   const revIn: number = dateOrder.reverse().findIndex((r) => r && r <= tod)
   const beforeTodayIndex: number | null =
     revIn === -1 ? null : dateOrder.length - revIn - 1
+  const keysInOrder = [...order]
+
+  if (!date) {
+    if (beforeTodayIndex !== null) {
+      keysInOrder.splice(beforeTodayIndex + 1, 0, key)
+      return keysInOrder
+    } else {
+      return [key, ...keysInOrder]
+    }
+  }
+
+  const dateKeyExists = order.indexOf(key) !== -1
+  if (dateKeyExists) {
+    return keysInOrder
+  }
+  if (date.ts > tod) {
+    // OK
+    const plu = dateOrder.findIndex((k) => k && k > date.ts)
+    if (plu > -1) {
+      keysInOrder.splice(plu, 0, key)
+      return keysInOrder
+    } else {
+      return [...keysInOrder, key]
+    }
+  }
+  // today or 過去
+  if (beforeTodayIndex === null) {
+    return [key, ...keysInOrder]
+  }
+  const beforeval = order[beforeTodayIndex]
+  const beforets = new Date(
+    parseInt(beforeval.slice(0, 4), 10),
+    parseInt(beforeval.slice(4, 6), 10) - 1,
+    parseInt(beforeval.slice(6, 8), 10)
+  ).getTime()
+  if (date.ts < beforets) {
+    const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
+    keysInOrder.splice(findin + 1, 0, key)
+    return keysInOrder
+  } else {
+    keysInOrder.splice(beforeTodayIndex + 1, 0, key)
+    return keysInOrder
+  }
+}
+export const useTask = (user: AuthedUser) => {
+  const [dones, setDones] = useState<Task[]>([])
+  const [order, setOrder] = useState<string[]>([])
+  const [adding, setAdding] = useState(false)
+  const [doingDone, setDoingDone] = useState(false)
 
   const addTask = async ({
     title,
@@ -42,75 +104,9 @@ export const useTask = (user: AuthedUser) => {
     if (!title) return '入力してください'
     setAdding(true)
     try {
-      const doc = firebase.firestore().collection('tasks').doc()
-      const added = Date.now()
-      const ob = {
-        done: false,
-        title,
-        date: date?.ts || null,
-        userID: user.uid,
-        activatedAt: added,
-        createdAt: added,
-      }
-      await doc.set(ob)
-
-      let keysInOrder = [...order]
-
-      if (date) {
-        const dateKey = date.key
-        if (order.indexOf(date.key) === -1) {
-          if (date.ts > tod) {
-            // OK
-            const plu = dateOrder.findIndex((k) => k && k > date.ts)
-            if (plu > -1) {
-              keysInOrder = [
-                ...keysInOrder.slice(0, plu),
-                dateKey,
-                ...keysInOrder.slice(plu),
-              ]
-            } else {
-              keysInOrder = [...keysInOrder, dateKey]
-            }
-          } else {
-            // today or 過去
-            if (beforeTodayIndex) {
-              const beforeval = order[beforeTodayIndex]
-              const beforets = new Date(
-                parseInt(beforeval.slice(0, 4), 10),
-                parseInt(beforeval.slice(4, 6), 10) - 1,
-                parseInt(beforeval.slice(6, 8), 10)
-              ).getTime()
-              if (date.ts < beforets) {
-                const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
-                keysInOrder = [
-                  ...keysInOrder.slice(0, findin),
-                  date.key,
-                  ...keysInOrder.slice(findin),
-                ]
-              } else {
-                keysInOrder = [
-                  ...keysInOrder.slice(0, beforeTodayIndex + 1),
-                  date.key,
-                  ...keysInOrder.slice(beforeTodayIndex + 1),
-                ]
-              }
-            } else {
-              keysInOrder = [dateKey, ...keysInOrder]
-            }
-          }
-        }
-      } else {
-        // OK
-        if (beforeTodayIndex) {
-          keysInOrder = [
-            ...keysInOrder.slice(0, beforeTodayIndex + 1),
-            doc.id,
-            ...keysInOrder.slice(beforeTodayIndex + 1),
-          ]
-        } else {
-          keysInOrder = [doc.id, ...keysInOrder]
-        }
-      }
+      // TODO: transac
+      const task = await aaa(title, date, user.uid)
+      const keysInOrder = bbb(order, date?.key || task.id, date)
 
       await firebase
         .firestore()
@@ -119,8 +115,6 @@ export const useTask = (user: AuthedUser) => {
         .set({ keysInOrder })
 
       setOrder(keysInOrder)
-      const task: Task = { ...ob, id: doc.id, date: date?.ts }
-
       setDones((b) => [...b, task])
       setAdding(false)
       return ''

@@ -1,6 +1,7 @@
+$beige-light: #D0D1CD;
 $beige-lighter: #EFF0EB;
 $box-padding: 0.5rem;
-$box-background-color: $beige-lighter;
+$box-background-color: $beige-light;
 $pink: #FA7C91;
 
 @import "~bulma/sass/utilities/_all";
@@ -29,6 +30,7 @@ $pink: #FA7C91;
   display: flex;
   flex-flow: column nowrap;
   height: 100%;
+  background-color: $beige-lighter;
 }
 .hog {
        width: 100%;
@@ -42,6 +44,7 @@ $pink: #FA7C91;
   display: flex;
 }
 .cal-date {
+  padding: 1px;
   flex: 1;
   max-width: calc(100% / 7);
 }

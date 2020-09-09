@@ -4,6 +4,14 @@ import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
 import { CalendarDate } from 'src/entities/CalendarDate'
+const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
+  const result = [...list]
+  const [removed] = result.splice(startIndex, 1)
+  result.splice(endIndex, 0, removed)
+
+  return result
+}
+
 const aaa = async (
   title: string,
   date: CalendarDate | undefined,
@@ -181,18 +189,6 @@ export const useTask = (user: AuthedUser) => {
   }
 
   const setO = (a: number, b: number) => {
-    const reorder = <T>(
-      list: T[],
-      startIndex: number,
-      endIndex: number
-    ): T[] => {
-      const result = [...list]
-      const [removed] = result.splice(startIndex, 1)
-      result.splice(endIndex, 0, removed)
-
-      return result
-    }
-
     setOrder(reorder(order, a, b))
   }
 

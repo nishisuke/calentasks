@@ -58,8 +58,9 @@ export const useTask = (user: AuthedUser) => {
 
       if (date) {
         const dateKey = date.key
-        if (dateOrder.indexOf(date.ts) === -1) {
+        if (order.indexOf(date.key) === -1) {
           if (date.ts > tod) {
+            // OK
             const plu = dateOrder.findIndex((k) => k && k > date.ts)
             if (plu > -1) {
               keysInOrder = [
@@ -71,15 +72,35 @@ export const useTask = (user: AuthedUser) => {
               keysInOrder = [...keysInOrder, dateKey]
             }
           } else {
+            // today or 過去
             if (beforeTodayIndex) {
-              // TODO: 一旦雑にやった
-              keysInOrder = [dateKey, ...keysInOrder]
+              const beforeval = order[beforeTodayIndex]
+              const beforets = new Date(
+                parseInt(beforeval.slice(0, 4), 10),
+                parseInt(beforeval.slice(4, 6), 10) - 1,
+                parseInt(beforeval.slice(6, 8), 10)
+              ).getTime()
+              if (date.ts < beforets) {
+                const findin = dateOrder.findIndex((ts) => ts > date.ts)
+                keysInOrder = [
+                  ...keysInOrder.slice(0, findin),
+                  date.key,
+                  ...keysInOrder.slice(findin),
+                ]
+              } else {
+                keysInOrder = [
+                  ...keysInOrder.slice(0, beforeTodayIndex + 1),
+                  date.key,
+                  ...keysInOrder.slice(beforeTodayIndex + 1),
+                ]
+              }
             } else {
               keysInOrder = [dateKey, ...keysInOrder]
             }
           }
         }
       } else {
+        // OK
         if (beforeTodayIndex) {
           keysInOrder = [
             ...keysInOrder.slice(0, beforeTodayIndex + 1),

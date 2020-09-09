@@ -25,7 +25,7 @@ export const useTask = (user: AuthedUser) => {
   const now = new Date()
   const tod = new Date(
     now.getFullYear(),
-    now.getMonth() - 1,
+    now.getMonth(),
     now.getDate()
   ).getTime()
   const revIn: number = dateOrder.reverse().findIndex((r) => r && r <= tod)
@@ -81,7 +81,7 @@ export const useTask = (user: AuthedUser) => {
                 parseInt(beforeval.slice(6, 8), 10)
               ).getTime()
               if (date.ts < beforets) {
-                const findin = dateOrder.findIndex((ts) => ts > date.ts)
+                const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
                 keysInOrder = [
                   ...keysInOrder.slice(0, findin),
                   date.key,

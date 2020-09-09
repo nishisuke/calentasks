@@ -153,11 +153,11 @@ export const useTask = (user: AuthedUser) => {
       } else {
         keysInOrder = keysInOrder.filter((b) => b !== t.id)
       }
-      const orderDoc = db.collection('order').doc(user.uid)
 
       const db = firebase.firestore()
       const doc = firebase.firestore().collection('tasks').doc(t.id)
       const upda = { done: true, doneAt: Date.now() }
+      const orderDoc = db.collection('order').doc(user.uid)
 
       const task = await db.runTransaction(async (transaction) => {
         await transaction.update(doc, upda)

@@ -110,16 +110,6 @@ export const ScreenA: FC<P> = ({ user }) => {
   })
 
   const hero = 40
-  // <div style={{height: `${hero}px`}}></div>
-  //   <div className="header">
-  //     <div data-scroll className="sticky-header">HEADER</div>
-  //   </div>
-  // <div  data-scroll style={{height: '500px'}}>
-  //   a
-  //   <br />
-  //   a
-  //   <br />
-  // </div>
   return (
     <>
       <div style={{ height: `${hero}px` }}>

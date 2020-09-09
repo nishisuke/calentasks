@@ -53,8 +53,7 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
               className="cal-date"
               key={date}
             >
-              <div className="cal-num">{date}</div>
-              <div className="cal-title is-size-7">hello</div>
+              <div>{date}</div>
               {tasks
                 .filter(
                   (t) =>
@@ -62,7 +61,7 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
                     new CalendarDate(startDate.y, startDate.m, date).ts
                 )
                 .map((t) => (
-                  <div className="is-size-7" key={t.id}>
+                  <div className="is-size-7 hog" key={t.id}>
                     {t.title}
                   </div>
                 ))}

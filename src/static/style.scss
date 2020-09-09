@@ -29,7 +29,12 @@ $pink: #FA7C91;
   display: flex;
   flex-flow: column nowrap;
   height: 100%;
-  background: red;
+}
+.hog {
+       width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 .cal-week {
   overflow-y: hidden;
@@ -38,8 +43,7 @@ $pink: #FA7C91;
 }
 .cal-date {
   flex: 1;
-  display: flex;
-  flex-flow: column nowrap;
+  max-width: calc(100% / 7);
 }
 .task {
   height: 24px;

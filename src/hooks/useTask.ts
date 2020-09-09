@@ -12,24 +12,6 @@ const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
   return result
 }
 
-const aaa = async (
-  title: string,
-  date: CalendarDate | undefined,
-  userID: string
-): Promise<Task> => {
-  const doc = firebase.firestore().collection('tasks').doc()
-  const added = Date.now()
-  const ob = {
-    done: false,
-    title,
-    date: date?.ts || null,
-    userID,
-    activatedAt: added,
-    createdAt: added,
-  }
-  await doc.set(ob)
-  return { ...ob, id: doc.id, date: date?.ts }
-}
 export const bbb = (
   order: string[],
   key: string,
@@ -125,17 +107,29 @@ export const useTask = (user: AuthedUser) => {
     setAdding(true)
     try {
       // TODO: transac
-      const task = await aaa(title, date, user.uid)
-      const keysInOrder = bbb(order, date?.key || task.id, date)
 
-      await firebase
-        .firestore()
-        .collection('order')
-        .doc(user.uid)
-        .set({ keysInOrder })
+      const db = firebase.firestore()
+      const doc = db.collection('tasks').doc()
+      const added = Date.now()
+      const ob = {
+        done: false,
+        title,
+        date: date?.ts || null,
+        userID: user.uid,
+        activatedAt: added,
+        createdAt: added,
+      }
+      const keysInOrder = bbb(order, date?.key || doc.id, date)
+      const orderDoc = db.collection('order').doc(user.uid)
+      const task = await db.runTransaction(async (transaction) => {
+        await transaction.set(doc, ob)
+        await transaction.set(orderDoc, { keysInOrder })
+        return { ...ob, id: doc.id, date: date?.ts }
+      })
 
       setOrder(keysInOrder)
       setDones((b) => [...b, task])
+
       setAdding(false)
       return ''
     } catch (e) {

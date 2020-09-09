@@ -121,24 +121,20 @@ $pink: #FA7C91;
 //=========
 .swipesticky {
   position: relative;
-  height: 300px;
-}
-.scrollout {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 300px;
-}
-.scrollout[data-scroll="in"] {
-  position: fixed;
-}
-.hoge[data-scroll="in"] {
-  height: calc((1 - var(--scroll-percent-y)) * 340px);
-  max-height: 300px;
-  min-height: 120px;
-}
-.cal-num {
-}
-.cal-title {
+  $stickyheight: 300px;
+  height: $stickyheight;
+
+  & > div {
+    top: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    height: $stickyheight;
+  }
+  &[data-scroll="in"] > div {
+    position: fixed;
+    height: calc(var(--visible-y) * #{$stickyheight});
+    max-height: $stickyheight;
+    min-height: 120px;
+  }
 }

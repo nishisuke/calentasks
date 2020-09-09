@@ -128,7 +128,7 @@ $pink: #FA7C91;
 //=========
 .swipesticky {
   position: relative;
-  $stickyheight: 300px;
+  $stickyheight: 310px;
   height: $stickyheight;
 
   & > div {
@@ -142,6 +142,6 @@ $pink: #FA7C91;
     position: fixed;
     height: calc(var(--visible-y) * #{$stickyheight});
     max-height: $stickyheight;
-    min-height: 120px;
+    min-height: 130px;
   }
 }

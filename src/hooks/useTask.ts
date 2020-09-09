@@ -22,7 +22,11 @@ const aaa = async (
   await doc.set(ob)
   return { ...ob, id: doc.id, date: date?.ts }
 }
-const bbb = (order: string[], key: string, date: CalendarDate | undefined) => {
+export const bbb = (
+  order: string[],
+  key: string,
+  date: CalendarDate | undefined
+) => {
   const dateOrder: (number | null)[] = order.map((st) => {
     if (/^\d{8,8}$/.test(st)) {
       return new Date(

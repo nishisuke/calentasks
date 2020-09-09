@@ -41,12 +41,13 @@ const bbb = (order: string[], key: string, date: CalendarDate | undefined) => {
     now.getDate()
   ).getTime()
 
-  const revIn: number = dateOrder.reverse().findIndex((r) => r && r <= tod)
+  const revIn: number = [...dateOrder].reverse().findIndex((r) => r && r <= tod)
   const beforeTodayIndex: number | null =
     revIn === -1 ? null : dateOrder.length - revIn - 1
   const keysInOrder = [...order]
 
   if (!date) {
+    console.log('order', 'no date', beforeTodayIndex)
     if (beforeTodayIndex !== null) {
       keysInOrder.splice(beforeTodayIndex + 1, 0, key)
       return keysInOrder
@@ -57,11 +58,16 @@ const bbb = (order: string[], key: string, date: CalendarDate | undefined) => {
 
   const dateKeyExists = order.indexOf(key) !== -1
   if (dateKeyExists) {
+    console.log('order', 'dateex')
     return keysInOrder
   }
+  console.log('order', 'datenotex')
+
   if (date.ts > tod) {
     // OK
+    console.log(dateOrder, date.ts)
     const plu = dateOrder.findIndex((k) => k && k > date.ts)
+    console.log('order', 'dateaftoday', plu)
     if (plu > -1) {
       keysInOrder.splice(plu, 0, key)
       return keysInOrder
@@ -71,6 +77,7 @@ const bbb = (order: string[], key: string, date: CalendarDate | undefined) => {
   }
   // today or 過去
   if (beforeTodayIndex === null) {
+    console.log('order', 'datebetodayunex')
     return [key, ...keysInOrder]
   }
   const beforeval = order[beforeTodayIndex]
@@ -79,9 +86,10 @@ const bbb = (order: string[], key: string, date: CalendarDate | undefined) => {
     parseInt(beforeval.slice(4, 6), 10) - 1,
     parseInt(beforeval.slice(6, 8), 10)
   ).getTime()
+  console.log('order', 'datebetodayex', beforets)
   if (date.ts < beforets) {
     const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
-    keysInOrder.splice(findin + 1, 0, key)
+    keysInOrder.splice(findin, 0, key)
     return keysInOrder
   } else {
     keysInOrder.splice(beforeTodayIndex + 1, 0, key)

@@ -11,6 +11,8 @@ import firebase from 'firebase/app'
 import { signOut } from 'src/services/authService'
 import { useTask } from 'src/hooks/useTask'
 import { CalendarDate } from 'src/entities/CalendarDate'
+import { IKey } from 'src/entities/TaskKey'
+
 import { ScrollOutSticky } from 'src/components/ScrollOutSticky'
 
 interface FP {
@@ -95,6 +97,11 @@ export const ScreenA: FC<P> = ({ user }) => {
     }
   }
 
+  const filtered: Task[] = order.reduce(
+    (acc: Task[], o: IKey) => [...acc, ...o.filterTasks(tasks)],
+    []
+  )
+  if (filtered.length !== tasks.length) alert('Something fail')
   const hero = 40
   return (
     <>

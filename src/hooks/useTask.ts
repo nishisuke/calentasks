@@ -71,9 +71,15 @@ export const bbb = (
     return beforeTodayIndex + 1
   }
 }
+
+interface V {
+  order: IKey[]
+  tasks: Task[]
+}
 export const useTask = (user: AuthedUser) => {
-  const [dones, setDones] = useState<Task[]>([])
-  const [order, setOrder] = useState<IKey[]>([])
+  const [foo, setFoo] = useState<V>({ order: [], tasks: [] })
+  const { tasks: dones, order } = foo
+
   const [adding, setAdding] = useState(false)
   const [doingDone, setDoingDone] = useState(false)
 
@@ -115,8 +121,11 @@ export const useTask = (user: AuthedUser) => {
         return { ...ob, id: doc.id, date: date?.ts }
       })
 
-      setOrder(keysInOrder)
-      setDones((b) => [...b, task])
+      setFoo((b: V) => ({
+        ...b,
+        tasks: [...b.tasks, task],
+        order: keysInOrder,
+      }))
 
       setAdding(false)
       return ''
@@ -156,13 +165,14 @@ export const useTask = (user: AuthedUser) => {
         })
       })
 
-      setOrder(tmpLocalOrder)
-      setDones((b) => {
-        const tar: Task = dones.find((e) => e.id === t.id)!
-        const toggled = { ...tar, ...upda }
+      const tar: Task = dones.find((e) => e.id === t.id)!
+      const toggled = { ...tar, ...upda }
+      setFoo((b) => ({
+        ...b,
+        tasks: [...b.tasks.filter((e) => e.id !== t.id), toggled],
+        order: tmpLocalOrder,
+      }))
 
-        return [...b.filter((e) => e.id !== t.id), toggled]
-      })
       setDoingDone(false)
     } catch (e) {
       setDoingDone(false)
@@ -172,11 +182,14 @@ export const useTask = (user: AuthedUser) => {
   }
 
   const setO = (a: number, b: number) => {
-    setOrder(reorder(order, a, b))
+    setFoo((be) => ({
+      ...be,
+      order: reorder(order, a, b),
+    }))
   }
 
   useEffect(() => {
-    firebase
+    const tasks: Promise<Task[]> = firebase
       .firestore()
       .collection('tasks')
       .where('userID', '==', user.uid)
@@ -191,37 +204,44 @@ export const useTask = (user: AuthedUser) => {
             date: data?.date || undefined,
           })
         })
-        setDones(arr)
+        return arr
       })
-      .catch((e: Error) => console.error(e))
 
-    firebase
+    const o: Promise<IKey[]> = firebase
       .firestore()
       .collection('order')
       .doc(user.uid)
       .get()
       .then((doc: any) => {
         if (doc.exists) {
-          setOrder(
-            doc.data().keysInOrder.map((b: string | number) => {
-              if (typeof b === 'number') {
-                const mod = b % 10000
-                return getKey(
-                  new CalendarDate(
-                    Math.floor(b / 10000),
-                    Math.floor(mod / 100),
-                    mod % 100
-                  )
+          return doc.data().keysInOrder.map((b: string | number) => {
+            if (typeof b === 'number') {
+              const mod = b % 10000
+              return getKey(
+                new CalendarDate(
+                  Math.floor(b / 10000),
+                  Math.floor(mod / 100),
+                  mod % 100
                 )
-              } else if (typeof b === 'string') {
-                return getKey(b)
-              } else {
-                throw new Error('No type')
-              }
-            })
-          )
+              )
+            } else if (typeof b === 'string') {
+              return getKey(b)
+            } else {
+              throw new Error('No type')
+            }
+          })
+        } else {
+          return []
         }
       })
+
+    Promise.all([tasks, o])
+      .then(([tasks, order]) =>
+        setFoo({
+          tasks,
+          order,
+        })
+      )
       .catch((e: Error) => console.error(e))
   }, [])
 

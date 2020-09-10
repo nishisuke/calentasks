@@ -4,9 +4,10 @@ export class CalendarDate {
   d: number
 
   constructor(y: number, m: number, d: number) {
-    this.y = y
-    this.m = m
-    this.d = d
+    const dt = new Date(y, m - 1, d)
+    this.y = dt.getFullYear()
+    this.m = dt.getMonth() + 1
+    this.d = dt.getDate()
   }
 
   get ts(): number {

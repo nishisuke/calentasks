@@ -2,6 +2,7 @@ $beige-light: #D0D1CD;
 $beige-lighter: #EFF0EB;
 $box-padding: 0.5rem;
 $box-background-color: $beige-light;
+$brown: #757763;
 $pink: #FA7C91;
 
 @import "~bulma/sass/utilities/_all";
@@ -14,17 +15,6 @@ $pink: #FA7C91;
 // @import "~bulma/sass/layout/_all";
 
 @import '~bulma-floating-button/dist/css/bulma-floating-button.min.css';
-
-//html {
-//  height: 100%;
-//}
-//body {
-//  height: 100%;
-//}
-//#app {
-//  height: 100%;
-//  overflow-y: scroll;
-//}
 
 .swipe-page {
   display: flex;
@@ -57,21 +47,6 @@ $pink: #FA7C91;
   }
 /*  transition: <property> <duration> <timing-function> <delay>; */
 }
-.my-node {
-  height: 24px;
-  overflow: hidden;
-}
-.my-node-exit {
-}
-.my-node-exit-active {
-  height: 0;
-  margin: 0;
-  transition: height .1s ease-out .4s;
-}
-.my-node-exit-done {
-  height: 0;
-  margin: 0;
-}
 .my-check,.my-check-exit-done,.my-check-enter-done {
   display: none;
 }
@@ -86,11 +61,6 @@ $pink: #FA7C91;
 .tasklist {
   flex: 1;
   padding: 8px;
-}
-.taskbox {
-  &:not(:last-child) {
-    margin-bottom: 0.25rem;
-  }
 }
 .addbutton {
   border-width: 0;
@@ -144,4 +114,51 @@ $pink: #FA7C91;
     max-height: $stickyheight;
     min-height: 130px;
   }
+}
+
+.boxdrag {
+  &:not(:last-child) > div {
+    margin-bottom: 0.25rem;
+  }
+}
+.my-node {
+  height: 40px;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.my-node-exit-active {
+  height: 0;
+  margin-bottom: 0 !important;
+  transition: height .1s ease-out .4s, margin-bottom .1s ease-out .4s;
+}
+.my-node-exit-done {
+  height: 0;
+  margin-bottom: 0 !important;
+}
+.donearea {
+ padding: 8px;
+ &.empty {
+   width: 32px;
+ } 
+}
+.tasktitle {
+  padding: 8px 8px 8px 0;
+  text-overflow: ellipsis;
+  flex: 1;
+  overflow: hidden;
+}
+.taskdate {
+  color: $grey-lighter;
+  height: 32px;
+  & > .donearea {
+ padding: 4px 8px;
+  }
+  & > .tasktitle {
+  padding: 4px 8px 4px 0;
+  }
+}
+.datetitle {
+  padding-left: 8px;
 }

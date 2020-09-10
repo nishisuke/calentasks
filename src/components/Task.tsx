@@ -8,10 +8,17 @@ interface I {
   done: (t: Task) => Promise<void>
   disableDone: boolean
   setDoingDone: (s: boolean) => void
+  className: string
 }
 
 // This is undone
-export const Item: FC<I> = ({ task, done, disableDone, setDoingDone }) => {
+export const Item: FC<I> = ({
+  className,
+  task,
+  done,
+  disableDone,
+  setDoingDone,
+}) => {
   const [s, sb] = useState(false)
   const click = () => {
     setDoingDone(true)
@@ -23,7 +30,7 @@ export const Item: FC<I> = ({ task, done, disableDone, setDoingDone }) => {
       in={!s}
       exit={true}
       enter={false}
-      timeout={510}
+      timeout={500}
       classNames="my-node"
       onExited={
         () =>
@@ -33,19 +40,19 @@ export const Item: FC<I> = ({ task, done, disableDone, setDoingDone }) => {
         // TODO e
       }
     >
-      <div className={`field my-node`}>
+      <div className={`${className} my-node`}>
         {!disableDone && !s && (
-          <span onClick={click}>
+          <span onClick={click} className="donearea">
             <i className="far fa-circle" />
           </span>
         )}
         {!disableDone && s && (
-          <span onClick={click}>
+          <span onClick={click} className="donearea">
             <i className="fas fa-check" />
           </span>
         )}
-        {task.title}
-        {task.date}
+        {disableDone && <span className="donearea empty" />}
+        <span className="tasktitle">{task.title}</span>
       </div>
     </CSSTransition>
   )

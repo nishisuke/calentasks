@@ -89,11 +89,12 @@ export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <span className="has-text-grey-light">
+                        <div className="datetitle has-text-grey-light">
                           {da.getMonth() + 1}/{da.getDate()}
-                        </span>
+                        </div>
                         {ts.map((h) => (
                           <Item
+                            className="taskdate"
                             setDoingDone={sa}
                             key={h.id}
                             task={h}
@@ -119,9 +120,10 @@ export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="box taskbox"
+                        className="boxdrag"
                       >
                         <Item
+                          className="box"
                           setDoingDone={sa}
                           disableDone={b}
                           task={ts[0]}

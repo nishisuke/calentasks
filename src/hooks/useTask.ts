@@ -4,8 +4,10 @@ import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
 import { CalendarDate } from 'src/entities/CalendarDate'
+import { IKey, TaskKey } from 'src/entities/TaskKey'
+
 const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
-  const result = [...list]
+  const result: T[] = [...list]
   const [removed] = result.splice(startIndex, 1)
   result.splice(endIndex, 0, removed)
 
@@ -13,20 +15,12 @@ const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
 }
 
 export const bbb = (
-  order: string[],
-  key: string,
+  order: IKey[],
+  key: IKey,
   date: CalendarDate | undefined
 ) => {
   const dateOrder: (number | null)[] = order.map((st) => {
-    if (/^\d{8,8}$/.test(st)) {
-      return new Date(
-        parseInt(st.slice(0, 4), 10),
-        parseInt(st.slice(4, 6), 10) - 1,
-        parseInt(st.slice(6, 8), 10)
-      ).getTime()
-    } else {
-      return null
-    }
+    return st.ts
   })
   const now = new Date()
   const tod = new Date(
@@ -38,7 +32,7 @@ export const bbb = (
   const revIn: number = [...dateOrder].reverse().findIndex((r) => r && r <= tod)
   const beforeTodayIndex: number | null =
     revIn === -1 ? null : dateOrder.length - revIn - 1
-  const keysInOrder = [...order]
+  const keysInOrder: IKey[] = [...order]
 
   if (!date) {
     console.log('order', 'no date', beforeTodayIndex)
@@ -75,11 +69,7 @@ export const bbb = (
     return [key, ...keysInOrder]
   }
   const beforeval = order[beforeTodayIndex]
-  const beforets = new Date(
-    parseInt(beforeval.slice(0, 4), 10),
-    parseInt(beforeval.slice(4, 6), 10) - 1,
-    parseInt(beforeval.slice(6, 8), 10)
-  ).getTime()
+  const beforets = beforeval.ts! // TODO
   console.log('order', 'datebetodayex', beforets)
   if (date.ts < beforets) {
     const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
@@ -92,7 +82,7 @@ export const bbb = (
 }
 export const useTask = (user: AuthedUser) => {
   const [dones, setDones] = useState<Task[]>([])
-  const [order, setOrder] = useState<string[]>([])
+  const [order, setOrder] = useState<IKey[]>([])
   const [adding, setAdding] = useState(false)
   const [doingDone, setDoingDone] = useState(false)
 
@@ -117,11 +107,13 @@ export const useTask = (user: AuthedUser) => {
         activatedAt: added,
         createdAt: added,
       }
-      const keysInOrder = bbb(order, date?.key || doc.id, date)
+      const keysInOrder = bbb(order, new TaskKey(date || doc.id), date)
       const orderDoc = db.collection('order').doc(user.uid)
       const task = await db.runTransaction(async (transaction) => {
         await transaction.set(doc, ob)
-        await transaction.set(orderDoc, { keysInOrder })
+        await transaction.set(orderDoc, {
+          keysInOrder: keysInOrder.map((i) => i.key),
+        })
         return { ...ob, id: doc.id, date: date?.ts }
       })
 
@@ -145,17 +137,11 @@ export const useTask = (user: AuthedUser) => {
       let tmpLocalOrder = [...order]
       if (t.date) {
         if (dones.filter((l) => l.date === t.date).length === 1) {
-          const d = new Date(t.date)
-          const cald = new CalendarDate(
-            d.getFullYear(),
-            d.getMonth() + 1,
-            d.getDate()
-          )
-          keysInOrder = keysInOrder.filter((b) => b !== cald.key)
+          keysInOrder = keysInOrder.filter((b) => !b.ts || b.ts !== t.date)
           // NOTE: dbだけdate消す
         }
       } else {
-        keysInOrder = keysInOrder.filter((b) => b !== t.id)
+        keysInOrder = keysInOrder.filter((b) => b.key !== t.id)
         tmpLocalOrder = [...keysInOrder]
       }
 
@@ -188,28 +174,6 @@ export const useTask = (user: AuthedUser) => {
     setOrder(reorder(order, a, b))
   }
 
-  const tasksGroups: Task[][] = []
-  order.map((st) => {
-    if (/^\d{8,8}$/.test(st)) {
-      const ts = new Date(
-        parseInt(st.slice(0, 4), 10),
-        parseInt(st.slice(4, 6), 10) - 1,
-        parseInt(st.slice(6, 8), 10)
-      ).getTime()
-      tasksGroups.push(dones.filter((t) => !t.done && t.date && t.date === ts))
-    }
-
-    const t = dones.find((t) => !t.done && t.id === st)
-    if (t) tasksGroups.push([t])
-  })
-
-  // TODO
-  if (
-    dones.filter((t) => !t.done).length !==
-    tasksGroups.reduce((ac, arr) => [...ac, ...arr], []).length
-  ) {
-  }
-
   useEffect(() => {
     firebase
       .firestore()
@@ -237,7 +201,7 @@ export const useTask = (user: AuthedUser) => {
       .get()
       .then((doc: any) => {
         if (doc.exists) {
-          setOrder(doc.data().keysInOrder)
+          setOrder(doc.data().keysInOrder.map((b: any) => new TaskKey(b)))
         } else {
           // TODO
         }
@@ -248,7 +212,6 @@ export const useTask = (user: AuthedUser) => {
   return {
     addTask,
     moveItem: setO,
-    tasksGroups,
     toggle,
     adding,
     doingDone,

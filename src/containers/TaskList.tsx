@@ -6,11 +6,12 @@ import {
   DraggableProvided,
 } from 'react-beautiful-dnd'
 
+import { IKey } from 'src/entities/TaskKey'
 import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
 interface P {
-  order: string[]
+  order: IKey[]
   tasks: Task[]
   done: (t: Task) => Promise<void>
   setOrder: (a: number, b: number) => void
@@ -61,16 +62,10 @@ export const TaskList: FC<P> = ({
             {...provided.droppableProps}
           >
             {order.map((keystr, i) => {
-              if (/^\d{8,8}$/.test(keystr)) {
-                const idDrag = keystr
-                const da = new Date(
-                  parseInt(keystr.slice(0, 4), 10),
-                  parseInt(keystr.slice(4, 6), 10) - 1,
-                  parseInt(keystr.slice(6, 8), 10)
-                )
-                const ts = tasks.filter(
-                  (t) => t.date && t.date === da.getTime()
-                )
+              if (keystr.ts) {
+                const idDrag = keystr.key.toString()
+                const da = new Date(keystr.ts)
+                const ts = keystr.filterTasks(tasks)
                 return (
                   <Draggable
                     isDragDisabled={true}
@@ -102,8 +97,8 @@ export const TaskList: FC<P> = ({
                   </Draggable>
                 )
               } else {
-                const id = keystr
-                const task = tasks.find((t) => t.id === id)!
+                const id = keystr.key.toString()
+                const task = keystr.filterTasks(tasks)[0] // TODO
                 return (
                   <Draggable
                     isDragDisabled={disableDrag}

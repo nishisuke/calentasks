@@ -50,7 +50,6 @@ export const ScreenA: FC<P> = ({ user }) => {
     adding,
     addTask: _add,
     moveItem,
-    tasksGroups,
     toggle,
     order,
     tasks,

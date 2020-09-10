@@ -1,28 +1,9 @@
-import React, { FC, ReactNode, useEffect } from 'react'
-// @ts-ignore
-import ScrollOut from 'scroll-out'
+import React, { FC, ReactNode } from 'react'
 
 interface Props {
   page: ReactNode
 }
 
-declare global {
-  interface Window {
-    currentScrollTop: number
-  }
-}
-
-const hero = 40
 export const Layout: FC<Props> = ({ page }) => {
-  useEffect(() => {
-    const so = ScrollOut({
-      offset: hero,
-      cssProps: {
-        visibleY: true,
-      },
-    })
-
-    return so.teardown
-  }, [])
   return <>{page}</>
 }

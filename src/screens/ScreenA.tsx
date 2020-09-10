@@ -1,5 +1,7 @@
 import React, { FC, useContext, useEffect, useState, useRef } from 'react'
 import { CalendarContext } from 'src/contexts/calendar'
+// @ts-ignore
+import ScrollOut from 'scroll-out'
 
 import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'
@@ -103,8 +105,22 @@ export const ScreenA: FC<P> = ({ user }) => {
     (acc: Task[], o: IKey) => [...acc, ...o.filterTasks(tasks)],
     []
   )
-  if (filtered.length !== tasks.length) alert('Something fail')
+
   const hero = 40
+  useEffect(() => {
+    if (menuopen) return () => {}
+
+    const so = ScrollOut({
+      offset: hero,
+      cssProps: {
+        visibleY: true,
+      },
+    })
+
+    return so.teardown
+  }, [menuopen])
+
+  if (filtered.length !== tasks.length) alert('Something fail')
 
   if (menuopen) {
     const copy: Task[] = [...dones]

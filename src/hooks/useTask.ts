@@ -45,7 +45,7 @@ export const bbb = (
   }
 
   const dateKeyExists = order.indexOf(key) !== -1
-  if (dateKeyExists) {
+  if (order.findIndex((b) => b.key === key.key) !== -1) {
     console.log('order', 'dateex')
     return keysInOrder
   }

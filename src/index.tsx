@@ -27,6 +27,11 @@ const App = () => {
     thisMonth: now.getMonth() + 1,
   })
 
+  // const dev = {uid: 'hogehoge'}
+  // const auth = {
+  //   loaded: true,
+  //   user: dev,
+  // }
   if (!auth.loaded) {
     return <div>Loading</div>
   } else if (!auth.user) {

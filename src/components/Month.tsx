@@ -9,27 +9,15 @@ interface M {
 }
 
 const times = (n: number) => Array(n).fill(null)
-const getLastDate = (y: number, m: number) => new Date(y, m, 0).getDate()
 
 const getWeeks = (startDate: CalendarDate, limit: number) => {
-  const year = startDate.y
-  const month = startDate.m
-  const prevMonth = month - 1
-  const lastDate = getLastDate(year, month)
-  const prevMonthLastDate = getLastDate(year, prevMonth)
-
   const prevMonthDatesCount = startDate.date.getDay()
   const prevMonthDates = times(prevMonthDatesCount).map(
-    (_, i) => prevMonthLastDate - prevMonthDatesCount + i + 1
+    (_, i) => i - prevMonthDatesCount
   )
 
-  const dates = times(lastDate).map((_, i) => i + 1)
-
-  const r = (lastDate + prevMonthDatesCount) % 7
-  const nextMonthDatesCount = r === 0 ? 0 : 7 - r
-  const nextMonthDates = times(nextMonthDatesCount).map((_, i) => 1 + i)
-
-  const calendarDates = [...prevMonthDates, ...dates, ...nextMonthDates]
+  const dates = times(7 * limit - prevMonthDatesCount).map((_, i) => i)
+  const calendarDates = [...prevMonthDates, ...dates]
 
   const line = Math.min(Math.ceil(calendarDates.length / 7), limit)
   return times(line).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
@@ -46,19 +34,34 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
                 handleDate
                   ? () =>
                       handleDate(
-                        new CalendarDate(startDate.y, startDate.m, date)
+                        new CalendarDate(
+                          startDate.y,
+                          startDate.m,
+                          startDate.d + date
+                        )
                       )
                   : undefined
               }
               className="cal-date"
-              key={date}
+              key={
+                new CalendarDate(startDate.y, startDate.m, startDate.d + date).d
+              }
             >
-              <div>{date}</div>
+              <div>
+                {
+                  new CalendarDate(startDate.y, startDate.m, startDate.d + date)
+                    .d
+                }
+              </div>
               {tasks
                 .filter(
                   (t) =>
                     t.date ===
-                    new CalendarDate(startDate.y, startDate.m, date).ts
+                    new CalendarDate(
+                      startDate.y,
+                      startDate.m,
+                      startDate.d + date
+                    ).ts
                 )
                 .map((t) => (
                   <div className="is-size-7 hog" key={t.id}>

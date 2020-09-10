@@ -67,14 +67,17 @@ export const ScreenA: FC<P> = ({ user }) => {
       }
 
   const addTask = async (ob: { title: string; date?: CalendarDate }) => {
-    const text = await _add(ob)
-    if (!text) {
-      setAnimTrigger({ in: !animTrigger.in, title: ob.title })
-      sett('')
-      setdt(undefined)
-    } else {
-      // TODO
-      alert(text)
+    try {
+      const text = await _add(ob)
+      if (!text) {
+        setAnimTrigger({ in: !animTrigger.in, title: ob.title })
+        sett('')
+        setdt(undefined)
+      } else {
+        alert(text)
+      }
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -87,7 +90,6 @@ export const ScreenA: FC<P> = ({ user }) => {
   }) => {
     if (title) {
       addTask({ title, date }).then(() => setAddMode(false))
-      // TODO: catch
     } else {
       setAddMode(false)
     }

@@ -153,6 +153,9 @@ export const ScreenA: FC<P> = ({ user }) => {
         </span>
       </div>
       <ScrollOutSticky>
+        <span className="mymenu myfloating" onClick={() => setMenuopen(true)}>
+          <i className="fas fa-bars" />
+        </span>
         <Calendar tasks={tasks} handleDate={handleDate} />
       </ScrollOutSticky>
       {!addMode && (

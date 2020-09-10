@@ -97,7 +97,7 @@ export const TaskList: FC<P> = ({
                 )
               } else {
                 const id = keystr.key
-                const task = keystr.filterTasks(tasks)[0] // TODO
+                const task = keystr.filterTasks(tasks)[0]
                 return (
                   <Draggable
                     isDragDisabled={disableDrag}

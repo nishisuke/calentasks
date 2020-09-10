@@ -24,7 +24,7 @@ export const Item: FC<I> = ({
     setDoingDone(true)
     sb(true)
   }
-  // TODO; onexited　完了に失敗しました 2020/02/21 12:30
+
   return (
     <CSSTransition
       in={!s}
@@ -32,12 +32,10 @@ export const Item: FC<I> = ({
       enter={false}
       timeout={500}
       classNames="my-node"
-      onExited={
-        () =>
-          done(task)
-            .then(() => setDoingDone(false))
-            .catch(() => setDoingDone(false))
-        // TODO e
+      onExited={() =>
+        done(task)
+          .then(() => setDoingDone(false))
+          .catch(() => setDoingDone(false))
       }
     >
       <div className={`${className} my-node`}>

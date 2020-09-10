@@ -46,6 +46,7 @@ export const ScreenA: FC<P> = ({ user }) => {
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { calendar } = useContext(CalendarContext)
+  const [menuopen, setMenuopen] = useState(false)
 
   const {
     doingDone,
@@ -55,6 +56,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     toggle,
     order,
     tasks,
+    dones,
   } = useTask(user)
 
   useEffect(() => {
@@ -103,10 +105,33 @@ export const ScreenA: FC<P> = ({ user }) => {
   )
   if (filtered.length !== tasks.length) alert('Something fail')
   const hero = 40
+
+  if (menuopen) {
+    const copy: Task[] = [...dones]
+    copy.sort((a, b) => b.doneAt! - a.doneAt!)
+    return (
+      <>
+        <div className="myheader" style={{ height: `${hero}px` }}>
+          <span className="mymenu" onClick={() => setMenuopen(false)}>
+            <i className="fas fa-bars" />
+          </span>
+        </div>
+        <button onClick={signOut} className="button ">
+          sign out
+        </button>
+        {copy.map((t) => (
+          <div key={t.id}>{t.title}</div>
+        ))}
+      </>
+    )
+  }
+
   return (
     <>
       <div className="myheader" style={{ height: `${hero}px` }}>
-        <i className="mymenu fas fa-bars" />
+        <span className="mymenu" onClick={() => setMenuopen(true)}>
+          <i className="fas fa-bars" />
+        </span>
         <span className="monthlabel">
           {calendar.thisMonth + calendar.currentIndex}月
         </span>
@@ -179,9 +204,6 @@ export const ScreenA: FC<P> = ({ user }) => {
           <i className={`fas fa-times`} />
         </FAB>
       )}
-      <button onClick={signOut} className="button ">
-        sign out
-      </button>
     </>
   )
 }

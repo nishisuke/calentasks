@@ -252,6 +252,7 @@ export const useTask = (user: AuthedUser) => {
     adding,
     doingDone,
     tasks: dones.filter((t) => !t.done),
+    dones: dones.filter((t) => t.done),
     order,
   }
 }

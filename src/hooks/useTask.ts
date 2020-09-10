@@ -152,9 +152,13 @@ export const useTask = (user: AuthedUser) => {
       const upda = { done: true, doneAt: Date.now() }
       const orderDoc = db.collection('order').doc(user.uid)
 
-      const task = await db.runTransaction(async (transaction) => {
+      await db.runTransaction(async (transaction) => {
         await transaction.update(doc, upda)
-        await transaction.set(orderDoc, { keysInOrder })
+        await transaction.set(orderDoc, {
+          keysInOrder: keysInOrder.map((i) =>
+            i.ts ? parseInt(i.key, 10) : i.key
+          ),
+        })
       })
 
       setOrder(tmpLocalOrder)

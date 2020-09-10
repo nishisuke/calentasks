@@ -51,7 +51,7 @@ class TaskKeyDate {
   }
 
   get key(): string {
-    return `${this.y}${this.m}${this.d}`
+    return `${this.y}${`0${this.m}`.slice(-2)}${`0${this.d}`.slice(-2)}`
   }
 }
 

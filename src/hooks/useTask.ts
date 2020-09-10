@@ -16,12 +16,9 @@ const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
 
 export const bbb = (
   order: IKey[],
-  key: IKey,
   date: CalendarDate | undefined
-) => {
-  const dateOrder: (number | null)[] = order.map((st) => {
-    return st.ts
-  })
+): number | null => {
+  const dateOrder: (number | null)[] = order.map((st) => st.ts)
   const now = new Date()
   const tod = new Date(
     now.getFullYear(),
@@ -32,22 +29,19 @@ export const bbb = (
   const revIn: number = [...dateOrder].reverse().findIndex((r) => r && r <= tod)
   const beforeTodayIndex: number | null =
     revIn === -1 ? null : dateOrder.length - revIn - 1
-  const keysInOrder: IKey[] = [...order]
 
   if (!date) {
     console.log('order', 'no date', beforeTodayIndex)
     if (beforeTodayIndex !== null) {
-      keysInOrder.splice(beforeTodayIndex + 1, 0, key)
-      return keysInOrder
+      return beforeTodayIndex + 1
     } else {
-      return [key, ...keysInOrder]
+      return 0
     }
   }
 
-  const dateKeyExists = order.indexOf(key) !== -1
-  if (order.findIndex((b) => b.key === key.key) !== -1) {
+  if (order.findIndex((b) => b.ts === date.ts) !== -1) {
     console.log('order', 'dateex')
-    return keysInOrder
+    return null
   }
   console.log('order', 'datenotex')
 
@@ -57,27 +51,24 @@ export const bbb = (
     const plu = dateOrder.findIndex((k) => k && k > date.ts)
     console.log('order', 'dateaftoday', plu)
     if (plu > -1) {
-      keysInOrder.splice(plu, 0, key)
-      return keysInOrder
+      return plu
     } else {
-      return [...keysInOrder, key]
+      return order.length
     }
   }
   // today or 過去
   if (beforeTodayIndex === null) {
     console.log('order', 'datebetodayunex')
-    return [key, ...keysInOrder]
+    return 0
   }
   const beforeval = order[beforeTodayIndex]
   const beforets = beforeval.ts! // TODO
   console.log('order', 'datebetodayex', beforets)
   if (date.ts < beforets) {
     const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
-    keysInOrder.splice(findin, 0, key)
-    return keysInOrder
+    return findin
   } else {
-    keysInOrder.splice(beforeTodayIndex + 1, 0, key)
-    return keysInOrder
+    return beforeTodayIndex + 1
   }
 }
 export const useTask = (user: AuthedUser) => {
@@ -107,7 +98,12 @@ export const useTask = (user: AuthedUser) => {
         activatedAt: added,
         createdAt: added,
       }
-      const keysInOrder = bbb(order, getKey(date || doc.id), date)
+      const inde = bbb(order, date)
+      const keysInOrder = [...order]
+      if (inde !== null) {
+        keysInOrder.splice(inde, 0, getKey(date || doc.id))
+      }
+
       const orderDoc = db.collection('order').doc(user.uid)
       const task = await db.runTransaction(async (transaction) => {
         await transaction.set(doc, ob)

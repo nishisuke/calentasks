@@ -1,6 +1,15 @@
-import { bbb } from './useTask'
+import { bbb as aaa } from './useTask'
 import { CalendarDate } from 'src/entities/CalendarDate'
 import { IKey, getKey } from 'src/entities/TaskKey'
+
+const bbb = (order: IKey[], key: IKey, date: CalendarDate | undefined) => {
+  const keysInOrder = [...order]
+  const inde = aaa(order, date)
+  if (inde !== null) {
+    keysInOrder.splice(inde, 0, key)
+  }
+  return keysInOrder
+}
 
 const k = (s: string) => {
   const a = new CalendarDate(

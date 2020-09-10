@@ -62,7 +62,7 @@ export const bbb = (
     return 0
   }
   const beforeval = order[beforeTodayIndex]
-  const beforets = beforeval.ts! // TODO
+  const beforets = beforeval.ts!
   console.log('order', 'datebetodayex', beforets)
   if (date.ts < beforets) {
     const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
@@ -122,8 +122,7 @@ export const useTask = (user: AuthedUser) => {
       return ''
     } catch (e) {
       setAdding(false)
-      // TODO: e
-      alert('fail')
+      console.error(e)
       return '失敗しました'
     }
   }
@@ -167,7 +166,7 @@ export const useTask = (user: AuthedUser) => {
       setDoingDone(false)
     } catch (e) {
       setDoingDone(false)
-      // TODO: e
+      console.error(e)
       alert('fail')
     }
   }
@@ -194,7 +193,7 @@ export const useTask = (user: AuthedUser) => {
         })
         setDones(arr)
       })
-      .catch((e: Error) => console.error(e)) // TODO
+      .catch((e: Error) => console.error(e))
 
     firebase
       .firestore()
@@ -217,15 +216,13 @@ export const useTask = (user: AuthedUser) => {
               } else if (typeof b === 'string') {
                 return getKey(b)
               } else {
-                throw new Error('TODO')
+                throw new Error('No type')
               }
             })
           )
-        } else {
-          // TODO
         }
       })
-      .catch((e: Error) => console.error(e)) // TODO
+      .catch((e: Error) => console.error(e))
   }, [])
 
   return {

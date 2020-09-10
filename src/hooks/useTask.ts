@@ -134,7 +134,7 @@ export const useTask = (user: AuthedUser) => {
       let keysInOrder = [...order]
       let tmpLocalOrder = [...order]
       if (t.date) {
-        if (dones.filter((l) => l.date === t.date).length === 1) {
+        if (dones.filter((l) => !l.done && l.date === t.date).length === 1) {
           keysInOrder = keysInOrder.filter((b) => b.ts !== t.date)
           // NOTE: dbだけdate消す
         }

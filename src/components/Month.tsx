@@ -28,48 +28,56 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
     <>
       {getWeeks(startDate, 5).map((week, i) => (
         <div className="cal-week" key={i}>
-          {week.map((date) => (
-            <div
-              onClick={
-                handleDate
-                  ? () =>
-                      handleDate(
-                        new CalendarDate(
-                          startDate.y,
-                          startDate.m,
-                          startDate.d + date
+          {week.map((date) => {
+            const dayst = tasks.filter(
+              (t) =>
+                t.date ===
+                new CalendarDate(startDate.y, startDate.m, startDate.d + date)
+                  .ts
+            )
+            return (
+              <div
+                onClick={
+                  handleDate
+                    ? () =>
+                        handleDate(
+                          new CalendarDate(
+                            startDate.y,
+                            startDate.m,
+                            startDate.d + date
+                          )
                         )
-                      )
-                  : undefined
-              }
-              className="cal-date"
-              key={
-                new CalendarDate(startDate.y, startDate.m, startDate.d + date).d
-              }
-            >
-              <div>
-                {
+                    : undefined
+                }
+                className="cal-date"
+                key={
                   new CalendarDate(startDate.y, startDate.m, startDate.d + date)
                     .d
                 }
-              </div>
-              {tasks
-                .filter(
-                  (t) =>
-                    t.date ===
+              >
+                <div>
+                  {
                     new CalendarDate(
                       startDate.y,
                       startDate.m,
                       startDate.d + date
-                    ).ts
-                )
-                .map((t) => (
+                    ).d
+                  }
+                </div>
+                {dayst.slice(0, 1).map((t) => (
                   <div className="is-size-7 hog" key={t.id}>
                     {t.title}
                   </div>
                 ))}
-            </div>
-          ))}
+                {dayst.length === 2 && (
+                  <div className="is-size-7 hog">{dayst[1].title}</div>
+                )}
+                {dayst.length > 2 && (
+                  <div className="is-size-7 hog">+{dayst.length - 1}</div>
+                )}
+              </div>
+            )
+          })}
         </div>
       ))}
     </>

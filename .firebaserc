@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "timels"
+    "default": "timels",
+    "prd": "calentasks"
   }
 }

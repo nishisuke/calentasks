@@ -1,2 +1,2 @@
 yarn run prd
-yarn run -s firebase deploy
+yarn run -s firebase --project prd deploy

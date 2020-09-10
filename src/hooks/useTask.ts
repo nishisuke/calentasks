@@ -112,7 +112,9 @@ export const useTask = (user: AuthedUser) => {
       const task = await db.runTransaction(async (transaction) => {
         await transaction.set(doc, ob)
         await transaction.set(orderDoc, {
-          keysInOrder: keysInOrder.map((i) => i.key),
+          keysInOrder: keysInOrder.map((i) =>
+            i.ts ? parseInt(i.key, 10) : i.key
+          ),
         })
         return { ...ob, id: doc.id, date: date?.ts }
       })
@@ -137,7 +139,7 @@ export const useTask = (user: AuthedUser) => {
       let tmpLocalOrder = [...order]
       if (t.date) {
         if (dones.filter((l) => l.date === t.date).length === 1) {
-          keysInOrder = keysInOrder.filter((b) => !b.ts || b.ts !== t.date)
+          keysInOrder = keysInOrder.filter((b) => b.ts !== t.date)
           // NOTE: dbだけdate消す
         }
       } else {
@@ -201,7 +203,24 @@ export const useTask = (user: AuthedUser) => {
       .get()
       .then((doc: any) => {
         if (doc.exists) {
-          setOrder(doc.data().keysInOrder.map((b: any) => new TaskKey(b)))
+          setOrder(
+            doc.data().keysInOrder.map((b: string | number) => {
+              if (typeof b === 'number') {
+                const mod = b % 10000
+                return new TaskKey(
+                  new CalendarDate(
+                    Math.floor(b / 10000),
+                    Math.floor(mod / 100),
+                    mod % 100
+                  )
+                )
+              } else if (typeof b === 'string') {
+                return new TaskKey(b)
+              } else {
+                throw new Error('TODO')
+              }
+            })
+          )
         } else {
           // TODO
         }

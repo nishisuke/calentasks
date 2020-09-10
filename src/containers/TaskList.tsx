@@ -62,9 +62,8 @@ export const TaskList: FC<P> = ({
             {...provided.droppableProps}
           >
             {order.map((keystr, i) => {
-              if (keystr.ts) {
-                const idDrag = keystr.key.toString()
-                const da = new Date(keystr.ts)
+              if (keystr.ts !== null) {
+                const idDrag = keystr.key
                 const ts = keystr.filterTasks(tasks)
                 return (
                   <Draggable
@@ -80,7 +79,7 @@ export const TaskList: FC<P> = ({
                         {...provided.dragHandleProps}
                       >
                         <div className="datetitle has-text-grey-light">
-                          {da.getMonth() + 1}/{da.getDate()}
+                          {keystr.key.slice(4, 6)}/{keystr.key.slice(6)}
                         </div>
                         {ts.map((h) => (
                           <Item
@@ -97,7 +96,7 @@ export const TaskList: FC<P> = ({
                   </Draggable>
                 )
               } else {
-                const id = keystr.key.toString()
+                const id = keystr.key
                 const task = keystr.filterTasks(tasks)[0] // TODO
                 return (
                   <Draggable

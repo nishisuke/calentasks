@@ -73,29 +73,6 @@ $pink: #FA7C91;
   position: relative;
 }
 
-
-
-
-//=========
-.header {
-  position: relative;
-  height: 240px;
-}
-.sticky-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 240px;
-  background-color: red;
-}
-.sticky-header[data-scroll="in"] {
-  position: fixed;
-  height: calc((1 - var(--scroll-percent-y) * 2) * 240px);
-  max-height: 240px;
-  min-height: 120px;
-}
-//=========
 .swipesticky {
   position: relative;
   $stickyheight: 310px;

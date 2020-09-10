@@ -17,7 +17,9 @@ export const Layout: FC<Props> = ({ page }) => {
   useEffect(() => {
     const so = ScrollOut({
       offset: hero,
-      cssProps: true, // TODO
+      cssProps: {
+        visibleY: true,
+      },
     })
 
     return so.teardown

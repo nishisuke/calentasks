@@ -7,31 +7,8 @@ export interface IKey {
   ts: number | null
 }
 
-export class TaskKey implements IKey {
-  i: IKey
-  key: string
-
-  constructor(key: string | CalendarDate) {
-    if (typeof key === 'string') {
-      this.i = new TaskKeyString(key)
-      this.key = key
-    } else if (key instanceof CalendarDate) {
-      const tmp = new TaskKeyDate(key)
-      this.i = tmp
-      this.key = tmp.key
-    } else {
-      throw new Error('TODO')
-    }
-  }
-
-  filterTasks(tasks: Task[]): Task[] {
-    return this.i.filterTasks(tasks)
-  }
-
-  get ts(): number | null {
-    return this.i.ts
-  }
-}
+export const getKey = (key: string | CalendarDate): IKey =>
+  key instanceof CalendarDate ? new TaskKeyDate(key) : new TaskKeyString(key)
 
 class TaskKeyDate {
   y: number

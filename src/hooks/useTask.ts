@@ -4,7 +4,7 @@ import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
 import { CalendarDate } from 'src/entities/CalendarDate'
-import { IKey, TaskKey } from 'src/entities/TaskKey'
+import { IKey, getKey } from 'src/entities/TaskKey'
 
 const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
   const result: T[] = [...list]
@@ -107,7 +107,7 @@ export const useTask = (user: AuthedUser) => {
         activatedAt: added,
         createdAt: added,
       }
-      const keysInOrder = bbb(order, new TaskKey(date || doc.id), date)
+      const keysInOrder = bbb(order, getKey(date || doc.id), date)
       const orderDoc = db.collection('order').doc(user.uid)
       const task = await db.runTransaction(async (transaction) => {
         await transaction.set(doc, ob)
@@ -211,7 +211,7 @@ export const useTask = (user: AuthedUser) => {
             doc.data().keysInOrder.map((b: string | number) => {
               if (typeof b === 'number') {
                 const mod = b % 10000
-                return new TaskKey(
+                return getKey(
                   new CalendarDate(
                     Math.floor(b / 10000),
                     Math.floor(mod / 100),
@@ -219,7 +219,7 @@ export const useTask = (user: AuthedUser) => {
                   )
                 )
               } else if (typeof b === 'string') {
-                return new TaskKey(b)
+                return getKey(b)
               } else {
                 throw new Error('TODO')
               }

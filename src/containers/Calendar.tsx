@@ -30,7 +30,7 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
     const { index, key } = params
     return (
       <MonthContainer
-        tasks={tasks}
+        tasks={index === calendar.currentIndex ? tasks : []}
         handleDate={index === calendar.currentIndex ? handleDate : undefined}
         key={key}
         index={index}

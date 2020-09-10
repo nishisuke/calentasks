@@ -142,16 +142,21 @@ export const useTask = (user: AuthedUser) => {
     setDoingDone(true)
     try {
       let keysInOrder = [...order]
-      if (t.date && dones.filter((l) => l.date === t.date).length === 1) {
-        const d = new Date(t.date)
-        const cald = new CalendarDate(
-          d.getFullYear(),
-          d.getMonth() + 1,
-          d.getDate()
-        )
-        keysInOrder = keysInOrder.filter((b) => b !== cald.key)
+      let tmpLocalOrder = [...order]
+      if (t.date) {
+        if (dones.filter((l) => l.date === t.date).length === 1) {
+          const d = new Date(t.date)
+          const cald = new CalendarDate(
+            d.getFullYear(),
+            d.getMonth() + 1,
+            d.getDate()
+          )
+          keysInOrder = keysInOrder.filter((b) => b !== cald.key)
+          // NOTE: dbだけdate消す
+        }
       } else {
         keysInOrder = keysInOrder.filter((b) => b !== t.id)
+        tmpLocalOrder = [...keysInOrder]
       }
 
       const db = firebase.firestore()
@@ -164,7 +169,7 @@ export const useTask = (user: AuthedUser) => {
         await transaction.set(orderDoc, { keysInOrder })
       })
 
-      setOrder(keysInOrder)
+      setOrder(tmpLocalOrder)
       setDones((b) => {
         const tar: Task = dones.find((e) => e.id === t.id)!
         const toggled = { ...tar, ...upda }
@@ -247,5 +252,7 @@ export const useTask = (user: AuthedUser) => {
     toggle,
     adding,
     doingDone,
+    tasks: dones.filter((t) => !t.done),
+    order,
   }
 }

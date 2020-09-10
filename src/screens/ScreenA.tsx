@@ -52,6 +52,8 @@ export const ScreenA: FC<P> = ({ user }) => {
     moveItem,
     tasksGroups,
     toggle,
+    order,
+    tasks,
   } = useTask(user)
 
   useEffect(() => {
@@ -91,23 +93,6 @@ export const ScreenA: FC<P> = ({ user }) => {
       setAddMode(false)
     }
   }
-  let tasks: Task[] = []
-  const now = new Date()
-  const beg = new Date(
-    now.getFullYear(),
-    calendar.thisMonth + calendar.currentIndex - 1,
-    1
-  ).getTime()
-  const end = new Date(
-    now.getFullYear(),
-    calendar.thisMonth + calendar.currentIndex,
-    1
-  ).getTime()
-  tasksGroups.forEach((l) => {
-    tasks = tasks.concat(
-      l.filter((t) => t.date && !t.done && beg <= t.date && t.date < end)
-    )
-  })
 
   const hero = 40
   return (
@@ -122,7 +107,8 @@ export const ScreenA: FC<P> = ({ user }) => {
         <TaskList
           doingDone={doingDone}
           setOrder={moveItem}
-          tasksGroups={tasksGroups}
+          order={order}
+          tasks={tasks}
           done={toggle}
         />
       )}

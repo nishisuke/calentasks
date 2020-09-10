@@ -10,13 +10,20 @@ import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
 interface P {
-  tasksGroups: Task[][]
+  order: string[]
+  tasks: Task[]
   done: (t: Task) => Promise<void>
   setOrder: (a: number, b: number) => void
   doingDone: boolean
 }
 
-export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
+export const TaskList: FC<P> = ({
+  doingDone,
+  setOrder,
+  tasks,
+  order,
+  done,
+}) => {
   const [b, sb] = useState(false)
   const [a, sa] = useState(false)
   const disableDrag = doingDone || a
@@ -53,29 +60,17 @@ export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
-            {tasksGroups.map((ts, i) => {
-              if (ts.length < 1) {
-                // orderの消し忘れなどのため
-                return (
-                  <Draggable
-                    isDragDisabled={true}
-                    key={i.toString()}
-                    draggableId={i.toString()}
-                    index={i}
-                  >
-                    {(provided: DraggableProvided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className="is-hidden"
-                      />
-                    )}
-                  </Draggable>
+            {order.map((keystr, i) => {
+              if (/^\d{8,8}$/.test(keystr)) {
+                const idDrag = keystr
+                const da = new Date(
+                  parseInt(keystr.slice(0, 4), 10),
+                  parseInt(keystr.slice(4, 6), 10) - 1,
+                  parseInt(keystr.slice(6, 8), 10)
                 )
-              } else if (ts[0].date) {
-                const idDrag = ts[0].date!.toString()
-                const da = new Date(ts[0].date)
+                const ts = tasks.filter(
+                  (t) => t.date && t.date === da.getTime()
+                )
                 return (
                   <Draggable
                     isDragDisabled={true}
@@ -107,7 +102,8 @@ export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
                   </Draggable>
                 )
               } else {
-                const id = ts[0].id
+                const id = keystr
+                const task = tasks.find((t) => t.id === id)!
                 return (
                   <Draggable
                     isDragDisabled={disableDrag}
@@ -126,7 +122,7 @@ export const TaskList: FC<P> = ({ doingDone, setOrder, tasksGroups, done }) => {
                           className="box"
                           setDoingDone={sa}
                           disableDone={b}
-                          task={ts[0]}
+                          task={task}
                           done={done}
                         />
                       </div>

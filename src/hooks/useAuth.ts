@@ -21,7 +21,7 @@ export const useAuth = () => {
     const unsubscribe = auth.onAuthStateChanged(
       (user: firebase.User | null) => setAuth(convert(user)),
       (e: firebase.auth.Error) => {
-        /* TODO: error */
+        console.error(e)
       }
     )
     return unsubscribe

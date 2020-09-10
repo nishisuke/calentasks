@@ -1,16 +1,21 @@
 4週ケア
 
-
-header
-font color
 order nukemore care
-MENU
+show done
+header
 calendar3以上の予定
-calendar min時に予定の数
-
-undone
-destroy done
+MENU
+font color
 
 
+
+
+
+
+
+## better
 kobetu bulma
 kobetu fontawesome
+undone
+destroy done
+calendar min時に予定の数

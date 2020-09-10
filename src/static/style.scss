@@ -139,3 +139,19 @@ $pink: #FA7C91;
   height: 0;
   margin-bottom: 0 !important;
 }
+.mymenu {
+  font-size: 40px;
+  padding: 8px;
+}
+.myheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+}
+.caldatelabel {
+  text-align: center;
+}
+.monthlabel {
+  margin-left: 4px;
+}

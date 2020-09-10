@@ -105,8 +105,11 @@ export const ScreenA: FC<P> = ({ user }) => {
   const hero = 40
   return (
     <>
-      <div style={{ height: `${hero}px` }}>
-        Month: {calendar.thisMonth + calendar.currentIndex}
+      <div className="myheader" style={{ height: `${hero}px` }}>
+        <span className="monthlabel">
+          {calendar.thisMonth + calendar.currentIndex}月
+        </span>
+        <i className="mymenu fas fa-bars" />
       </div>
       <ScrollOutSticky>
         <Calendar tasks={tasks} handleDate={handleDate} />

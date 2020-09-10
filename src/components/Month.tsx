@@ -55,7 +55,7 @@ export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
                     .d
                 }
               >
-                <div>
+                <div className="caldatelabel">
                   {
                     new CalendarDate(
                       startDate.y,

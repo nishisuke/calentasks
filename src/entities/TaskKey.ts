@@ -24,7 +24,7 @@ class TaskKeyDate {
   }
 
   filterTasks(tasks: Task[]): Task[] {
-    return tasks.filter((t) => t.date && t.date === this.ts)
+    return tasks.filter((t) => !t.done && t.date && t.date === this.ts)
   }
 
   get key(): string {
@@ -40,7 +40,7 @@ class TaskKeyString {
   }
 
   filterTasks(tasks: Task[]): Task[] {
-    return tasks.filter((t) => t.id === this.key)
+    return tasks.filter((t) => !t.done && t.id === this.key)
   }
 
   get ts(): null {

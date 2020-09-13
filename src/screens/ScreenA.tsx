@@ -142,6 +142,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     )
   }
 
+  const now = new Date()
   return (
     <>
       <div className="myheader" style={{ height: `${hero}px` }}>
@@ -149,7 +150,12 @@ export const ScreenA: FC<P> = ({ user }) => {
           <i className="fas fa-bars" />
         </span>
         <span className="monthlabel">
-          {calendar.thisMonth + calendar.currentIndex}月
+          {new Date(
+            now.getFullYear(),
+            calendar.thisMonth + calendar.currentIndex - 1,
+            now.getDate()
+          ).getMonth() + 1}
+          月
         </span>
       </div>
       <ScrollOutSticky>

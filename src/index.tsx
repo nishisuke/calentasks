@@ -34,7 +34,11 @@ const App = () => {
   //   user: dev,
   // }
   if (!auth.loaded) {
-    return <div>Loading</div>
+    return (
+      <CalendarContext.Provider value={{ calendar, setCalendar }}>
+        <Layout loading={true} page={<></>} menu={<></>} />
+      </CalendarContext.Provider>
+    )
   } else if (!auth.user) {
     return <SignIn />
   } else if (auth.user) {
@@ -42,7 +46,11 @@ const App = () => {
 
     return (
       <CalendarContext.Provider value={{ calendar, setCalendar }}>
-        <Layout page={page} menu={<MenuContent user={auth.user} />} />
+        <Layout
+          loading={false}
+          page={page}
+          menu={<MenuContent user={auth.user} />}
+        />
       </CalendarContext.Provider>
     )
   } else {

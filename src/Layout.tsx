@@ -6,64 +6,66 @@ import ScrollOut from 'scroll-out'
 interface Props {
   page: ReactNode
   menu: ReactNode
+  loading: boolean
 }
 interface MP {
   hero: number
-  openChildren: ReactNode
-  closeChildren: ReactNode
   num: number
-  menuopen: boolean
-  setMenuopen: () => void
+  icon: ReactNode
 }
-const Menu: FC<MP> = ({
-  num,
-  hero,
-  openChildren,
-  closeChildren,
-  setMenuopen,
-  menuopen,
-}) => {
+const LI = () => (
+  <span className="mymenu loading">
+    <i className="fas fa-spinner fa-pulse" />
+  </span>
+)
+
+interface IP {
+  click: () => void
+}
+const MI: FC<IP> = ({ click }) => (
+  <span className="mymenu" onClick={click}>
+    <i className="fas fa-bars" />
+  </span>
+)
+
+const Header: FC<MP> = ({ num, hero, icon }) => {
   return (
-    <>
-      <div data-scroll className="myheader" style={{ height: `${hero}px` }}>
-        <span className="mymenu" onClick={setMenuopen}>
-          <i className="fas fa-bars" />
-        </span>
-        <span className="monthlabel">{num}月</span>
-      </div>
-      {menuopen && openChildren}
-      {!menuopen && closeChildren}
-    </>
+    <div data-scroll className="myheader" style={{ height: `${hero}px` }}>
+      {icon}
+      <span className="monthlabel">{num}月</span>
+    </div>
   )
 }
 
-export const Layout: FC<Props> = ({ menu, page }) => {
+export const Layout: FC<Props> = ({ menu, page, loading }) => {
   const [menuopen, setMenuopen] = useState(false)
   const { calendar } = useContext(CalendarContext)
   const hero = 40
+
   useEffect(() => {
-    if (menuopen) return () => {}
+    let cb = () => {}
+    if (!menuopen && !loading) {
+      const so = ScrollOut({
+        offset: hero,
+        cssProps: {
+          visibleY: true,
+        },
+      })
+      cb = so.teardown
+    }
 
-    const so = ScrollOut({
-      offset: hero,
-      cssProps: {
-        visibleY: true,
-      },
-    })
-
-    return so.teardown
-  }, [menuopen])
+    return cb
+  }, [menuopen, loading])
 
   return (
     <>
-      <Menu
-        menuopen={menuopen}
-        setMenuopen={() => setMenuopen(!menuopen)}
+      <Header
         hero={hero}
         num={((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1}
-        closeChildren={page}
-        openChildren={menu}
+        icon={loading ? <LI /> : <MI click={() => setMenuopen(!menuopen)} />}
       />
+      {menuopen && menu}
+      {!menuopen && page}
     </>
   )
 }

@@ -137,6 +137,9 @@ $pink: #FA7C91;
 .mymenu {
   font-size: 24px;
   padding: 8px;
+  &.loading {
+  font-size: 21px;
+  }
 }
 .myheader {
   display: flex;

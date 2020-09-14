@@ -6,9 +6,6 @@ import React, {
   useState,
   useRef,
 } from 'react'
-import { CalendarContext } from 'src/contexts/calendar'
-// @ts-ignore
-import ScrollOut from 'scroll-out'
 
 import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'
@@ -23,28 +20,6 @@ import { CalendarDate } from 'src/entities/CalendarDate'
 import { IKey } from 'src/entities/TaskKey'
 
 import { ScrollOutSticky } from 'src/components/ScrollOutSticky'
-
-interface MP {
-  hero: number
-  openChildren: ReactNode
-  closeChildren: ReactNode
-  num: number
-}
-const Menu: FC<MP> = ({ num, hero, openChildren, closeChildren }) => {
-  const [menuopen, setMenuopen] = useState(false)
-  return (
-    <>
-      <div data-scroll className="myheader" style={{ height: `${hero}px` }}>
-        <span className="mymenu" onClick={() => setMenuopen(!menuopen)}>
-          <i className="fas fa-bars" />
-        </span>
-        <span className="monthlabel">{num}月</span>
-      </div>
-      {menuopen && openChildren}
-      {!menuopen && closeChildren}
-    </>
-  )
-}
 
 interface FP {
   onClick: () => void
@@ -76,8 +51,6 @@ export const ScreenA: FC<P> = ({ user }) => {
   const [d, setdt] = useState<CalendarDate | undefined>(undefined)
   const [addMode, setAddMode] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const { calendar } = useContext(CalendarContext)
-  const [menuopen, setMenuopen] = useState(false)
 
   const {
     doingDone,
@@ -135,26 +108,11 @@ export const ScreenA: FC<P> = ({ user }) => {
     []
   )
 
-  const hero = 40
-  useEffect(() => {
-    if (menuopen) return () => {}
-
-    const so = ScrollOut({
-      offset: hero,
-      cssProps: {
-        visibleY: true,
-      },
-    })
-
-    return so.teardown
-  }, [menuopen])
-
   if (filtered.length !== tasks.length) alert('Something fail')
 
   const copy: Task[] = [...dones]
   copy.sort((a, b) => b.doneAt! - a.doneAt!)
 
-  const now = new Date()
   const closeC = (
     <>
       <button onClick={signOut} className="button ">
@@ -166,7 +124,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     </>
   )
 
-  const openC = (
+  return (
     <>
       <ScrollOutSticky>
         <Calendar tasks={tasks} handleDate={handleDate} />
@@ -237,14 +195,5 @@ export const ScreenA: FC<P> = ({ user }) => {
         </FAB>
       )}
     </>
-  )
-
-  return (
-    <Menu
-      hero={hero}
-      num={((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1}
-      closeChildren={openC}
-      openChildren={closeC}
-    />
   )
 }

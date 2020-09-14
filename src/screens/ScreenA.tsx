@@ -14,7 +14,6 @@ import { CSSTransition } from 'react-transition-group'
 import { AuthedUser } from 'src/types/AuthedUser'
 
 import firebase from 'firebase/app'
-import { signOut } from 'src/services/authService'
 import { useTask } from 'src/hooks/useTask'
 import { CalendarDate } from 'src/entities/CalendarDate'
 import { IKey } from 'src/entities/TaskKey'
@@ -60,7 +59,6 @@ export const ScreenA: FC<P> = ({ user }) => {
     toggle,
     order,
     tasks,
-    dones,
   } = useTask(user)
 
   useEffect(() => {
@@ -109,21 +107,6 @@ export const ScreenA: FC<P> = ({ user }) => {
   )
 
   if (filtered.length !== tasks.length) alert('Something fail')
-
-  const copy: Task[] = [...dones]
-  copy.sort((a, b) => b.doneAt! - a.doneAt!)
-
-  const closeC = (
-    <>
-      <button onClick={signOut} className="button ">
-        sign out
-      </button>
-      {copy.map((t) => (
-        <div key={t.id}>{t.title}</div>
-      ))}
-    </>
-  )
-
   return (
     <>
       <ScrollOutSticky>

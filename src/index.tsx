@@ -11,6 +11,7 @@ import { CalendarContext, Calendar } from 'src/contexts/calendar'
 import { useAuth } from 'src/hooks/useAuth'
 import { ScreenA } from 'src/screens/ScreenA'
 import { SignIn } from 'src/containers/SignIn'
+import { MenuContent } from 'src/components/MenuContent'
 
 import 'src/static/style.scss'
 
@@ -41,7 +42,7 @@ const App = () => {
 
     return (
       <CalendarContext.Provider value={{ calendar, setCalendar }}>
-        <Layout page={page} />
+        <Layout page={page} menu={<MenuContent user={auth.user} />} />
       </CalendarContext.Provider>
     )
   } else {

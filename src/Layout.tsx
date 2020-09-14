@@ -5,6 +5,7 @@ import ScrollOut from 'scroll-out'
 
 interface Props {
   page: ReactNode
+  menu: ReactNode
 }
 interface MP {
   hero: number
@@ -36,7 +37,7 @@ const Menu: FC<MP> = ({
   )
 }
 
-export const Layout: FC<Props> = ({ page }) => {
+export const Layout: FC<Props> = ({ menu, page }) => {
   const [menuopen, setMenuopen] = useState(false)
   const { calendar } = useContext(CalendarContext)
   const hero = 40
@@ -61,7 +62,7 @@ export const Layout: FC<Props> = ({ page }) => {
         hero={hero}
         num={((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1}
         closeChildren={page}
-        openChildren={<div>hoge</div>}
+        openChildren={menu}
       />
     </>
   )

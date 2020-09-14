@@ -1,4 +1,11 @@
-import React, { FC, useContext, useEffect, useState, useRef } from 'react'
+import React, {
+  ReactNode,
+  FC,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from 'react'
 import { CalendarContext } from 'src/contexts/calendar'
 // @ts-ignore
 import ScrollOut from 'scroll-out'
@@ -16,6 +23,28 @@ import { CalendarDate } from 'src/entities/CalendarDate'
 import { IKey } from 'src/entities/TaskKey'
 
 import { ScrollOutSticky } from 'src/components/ScrollOutSticky'
+
+interface MP {
+  hero: number
+  openChildren: ReactNode
+  closeChildren: ReactNode
+  num: number
+}
+const Menu: FC<MP> = ({ num, hero, openChildren, closeChildren }) => {
+  const [menuopen, setMenuopen] = useState(false)
+  return (
+    <>
+      <div data-scroll className="myheader" style={{ height: `${hero}px` }}>
+        <span className="mymenu" onClick={() => setMenuopen(!menuopen)}>
+          <i className="fas fa-bars" />
+        </span>
+        <span className="monthlabel">{num}月</span>
+      </div>
+      {menuopen && openChildren}
+      {!menuopen && closeChildren}
+    </>
+  )
+}
 
 interface FP {
   onClick: () => void
@@ -122,46 +151,24 @@ export const ScreenA: FC<P> = ({ user }) => {
 
   if (filtered.length !== tasks.length) alert('Something fail')
 
-  if (menuopen) {
-    const copy: Task[] = [...dones]
-    copy.sort((a, b) => b.doneAt! - a.doneAt!)
-    return (
-      <>
-        <div className="myheader" style={{ height: `${hero}px` }}>
-          <span className="mymenu" onClick={() => setMenuopen(false)}>
-            <i className="fas fa-bars" />
-          </span>
-        </div>
-        <button onClick={signOut} className="button ">
-          sign out
-        </button>
-        {copy.map((t) => (
-          <div key={t.id}>{t.title}</div>
-        ))}
-      </>
-    )
-  }
+  const copy: Task[] = [...dones]
+  copy.sort((a, b) => b.doneAt! - a.doneAt!)
 
   const now = new Date()
-  return (
+  const closeC = (
     <>
-      <div className="myheader" style={{ height: `${hero}px` }}>
-        <span className="mymenu" onClick={() => setMenuopen(true)}>
-          <i className="fas fa-bars" />
-        </span>
-        <span className="monthlabel">
-          {new Date(
-            now.getFullYear(),
-            calendar.thisMonth + calendar.currentIndex - 1,
-            now.getDate()
-          ).getMonth() + 1}
-          月
-        </span>
-      </div>
+      <button onClick={signOut} className="button ">
+        sign out
+      </button>
+      {copy.map((t) => (
+        <div key={t.id}>{t.title}</div>
+      ))}
+    </>
+  )
+
+  const openC = (
+    <>
       <ScrollOutSticky>
-        <span className="mymenu myfloating" onClick={() => setMenuopen(true)}>
-          <i className="fas fa-bars" />
-        </span>
         <Calendar tasks={tasks} handleDate={handleDate} />
       </ScrollOutSticky>
       {!addMode && (
@@ -230,5 +237,14 @@ export const ScreenA: FC<P> = ({ user }) => {
         </FAB>
       )}
     </>
+  )
+
+  return (
+    <Menu
+      hero={hero}
+      num={((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1}
+      closeChildren={openC}
+      openChildren={closeC}
+    />
   )
 }

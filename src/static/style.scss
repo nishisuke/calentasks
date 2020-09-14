@@ -67,12 +67,6 @@ $pink: #FA7C91;
   border-width: 0;
   background-color: $pink;
 }
-.hoge {
-  display: flex;
-  flex-flow: column nowrap;
-  height: 532px;
-  position: relative;
-}
 
 .swipesticky {
   position: relative;
@@ -91,10 +85,6 @@ $pink: #FA7C91;
     height: calc(var(--visible-y) * #{$stickyheight});
     max-height: $stickyheight;
     min-height: 130px;
-
-    & > .mymenu.myfloating {
-    display: block;
-    }
   }
 }
 
@@ -147,22 +137,24 @@ $pink: #FA7C91;
 .mymenu {
   font-size: 24px;
   padding: 8px;
-  &.myfloating {
-    display: none;
-    position: absolute;
-    top: 8px;
-    z-index: 1;
-    left: 8px;
-    background-color: $grey-darker;
-    color: $beige-light;
-    border-radius: 50%;
-    padding: 0 7.5px;
-  }
 }
 .myheader {
   display: flex;
   align-items: center;
   padding: 8px;
+  position: relative;
+
+  &[data-scroll="in"] > .mymenu {
+    position: fixed;
+    top: 16px;
+    z-index: 1;
+    left: 16px;
+
+    background-color: #363636;
+    color: #d0d1cd;
+    border-radius: 50%;
+    padding: 0 7.5px;
+  }
 }
 .caldatelabel {
   text-align: center;

@@ -147,11 +147,11 @@ $pink: #FA7C91;
   padding: 8px;
   position: relative;
 
-  &[data-scroll="in"] > .mymenu {
+  &[data-scroll="in"] > .myfloatmenu {
     position: fixed;
-    top: 16px;
+    top: 8px;
     z-index: 1;
-    left: 16px;
+    left: 8px;
 
     background-color: #363636;
     color: #d0d1cd;

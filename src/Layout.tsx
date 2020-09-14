@@ -21,9 +21,10 @@ const LI = () => (
 
 interface IP {
   click: () => void
+  open: boolean
 }
-const MI: FC<IP> = ({ click }) => (
-  <span className="mymenu" onClick={click}>
+const MI: FC<IP> = ({ click, open }) => (
+  <span className={`mymenu ${!open && 'myfloatmenu'}`} onClick={click}>
     <i className="fas fa-bars" />
   </span>
 )
@@ -62,7 +63,13 @@ export const Layout: FC<Props> = ({ menu, page, loading }) => {
       <Header
         hero={hero}
         num={((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1}
-        icon={loading ? <LI /> : <MI click={() => setMenuopen(!menuopen)} />}
+        icon={
+          loading ? (
+            <LI />
+          ) : (
+            <MI open={menuopen} click={() => setMenuopen(!menuopen)} />
+          )
+        }
       />
       {menuopen && menu}
       {!menuopen && page}

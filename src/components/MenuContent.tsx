@@ -29,7 +29,6 @@ export const MenuContent: FC<P> = ({ user }) => {
             date: data?.date || undefined,
           })
         })
-        return arr
         arr.sort((a, b) => b.doneAt! - a.doneAt!)
         set(arr)
       })

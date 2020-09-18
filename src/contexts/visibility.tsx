@@ -32,10 +32,13 @@ export const VisibilityProvider: FC = ({ children }) => {
       set({ visible: e.target.visibilityState === 'visible' })
     }
 
-    // @ts-ignore
     if (
       !(
-        typeof document.addEventListener === 'undefined' || hidden === undefined
+        // @ts-ignore
+        (
+          typeof document.addEventListener === 'undefined' ||
+          hidden === undefined
+        )
       )
     ) {
       // @ts-ignore

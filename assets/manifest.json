@@ -1,0 +1,12 @@
+{
+  "short_name": "PWA",
+  "name": "PWA sample app",
+    "display": "standalone",
+
+  "start_url": "/index.html",
+  "icons": [{
+    "src": "/edit.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  }]
+}

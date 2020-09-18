@@ -37,6 +37,7 @@ export const VisibilityProvider: FC = ({ children }) => {
         // @ts-ignore
         (
           typeof document.addEventListener === 'undefined' ||
+          // @ts-ignore
           hidden === undefined
         )
       )

@@ -1,11 +1,4 @@
-import React, {
-  ReactNode,
-  FC,
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-} from 'react'
+import React, { ReactNode, FC, useEffect, useState, useRef } from 'react'
 
 import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'

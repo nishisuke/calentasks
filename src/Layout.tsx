@@ -38,14 +38,16 @@ const Header: FC<MP> = ({ num, hero, icon }) => {
   )
 }
 
+import { VisibilityContext } from 'src/contexts/visibility'
 export const Layout: FC<Props> = ({ menu, page, loading }) => {
   const [menuopen, setMenuopen] = useState(false)
   const { calendar } = useContext(CalendarContext)
+  const { visible } = useContext(VisibilityContext)
   const hero = 40
 
   useEffect(() => {
     let cb = () => {}
-    if (!menuopen && !loading) {
+    if (!menuopen && !loading && visible) {
       const so = ScrollOut({
         offset: hero,
         cssProps: {
@@ -56,7 +58,7 @@ export const Layout: FC<Props> = ({ menu, page, loading }) => {
     }
 
     return cb
-  }, [menuopen, loading])
+  }, [menuopen, loading, visible])
 
   return (
     <>

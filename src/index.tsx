@@ -8,6 +8,7 @@ import 'firebase/firestore'
 
 import { Layout } from 'src/Layout'
 import { CalendarContext, Calendar } from 'src/contexts/calendar'
+import { VisibilityProvider } from 'src/contexts/visibility'
 import { useAuth } from 'src/hooks/useAuth'
 import { ScreenA } from 'src/screens/ScreenA'
 import { SignIn } from 'src/containers/SignIn'
@@ -35,23 +36,31 @@ const App = () => {
   // }
   if (!auth.loaded) {
     return (
-      <CalendarContext.Provider value={{ calendar, setCalendar }}>
-        <Layout loading={true} page={<></>} menu={<></>} />
-      </CalendarContext.Provider>
+      <VisibilityProvider>
+        <CalendarContext.Provider value={{ calendar, setCalendar }}>
+          <Layout loading={true} page={<></>} menu={<></>} />
+        </CalendarContext.Provider>
+      </VisibilityProvider>
     )
   } else if (!auth.user) {
-    return <SignIn />
+    return (
+      <VisibilityProvider>
+        <SignIn />
+      </VisibilityProvider>
+    )
   } else if (auth.user) {
     const page = <ScreenA user={auth.user} />
 
     return (
-      <CalendarContext.Provider value={{ calendar, setCalendar }}>
-        <Layout
-          loading={false}
-          page={page}
-          menu={<MenuContent user={auth.user} />}
-        />
-      </CalendarContext.Provider>
+      <VisibilityProvider>
+        <CalendarContext.Provider value={{ calendar, setCalendar }}>
+          <Layout
+            loading={false}
+            page={page}
+            menu={<MenuContent user={auth.user} />}
+          />
+        </CalendarContext.Provider>
+      </VisibilityProvider>
     )
   } else {
     throw new Error('Fail')

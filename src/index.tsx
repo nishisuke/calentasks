@@ -8,6 +8,7 @@ import 'firebase/firestore'
 
 import { CalendarProvider, CalendarContext } from 'src/contexts/calendar'
 import { VisibilityContext, VisibilityProvider } from 'src/contexts/visibility'
+import { IntervalContext, IntervalProvider } from 'src/contexts/interval'
 import { useAuth } from 'src/hooks/useAuth'
 import { Layout } from 'src/Layout'
 import { ScreenA } from 'src/screens/ScreenA'
@@ -34,13 +35,14 @@ const EmptyCal: FC<PP> = ({ num }) => {
 const App = () => {
   const { visible } = useContext(VisibilityContext)
   const { syncTime, calendar } = useContext(CalendarContext)
+  const { updatedAt } = useContext(IntervalContext)
   const auth = useAuth()
 
   useEffect(() => {
     if (visible) {
       syncTime()
     }
-  }, [visible])
+  }, [visible, updatedAt])
 
   const num = ((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1
   const page = !auth.loaded ? (
@@ -60,10 +62,12 @@ const App = () => {
 }
 
 render(
-  <VisibilityProvider>
-    <CalendarProvider>
-      <App />
-    </CalendarProvider>
-  </VisibilityProvider>,
+  <IntervalProvider>
+    <VisibilityProvider>
+      <CalendarProvider>
+        <App />
+      </CalendarProvider>
+    </VisibilityProvider>
+  </IntervalProvider>,
   document.getElementById('app')
 )

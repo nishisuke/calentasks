@@ -49,7 +49,9 @@ export const VisibilityProvider: FC = ({ children }) => {
       document.addEventListener(visibilityChange, handleVisibilityChange, false)
       // @ts-ignore
       cb = () =>
+        // @ts-ignore
         document.removeEventListener(
+          // @ts-ignore
           visibilityChange,
           handleVisibilityChange,
           false

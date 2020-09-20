@@ -1,3 +1,15 @@
+tmpLocalOrderでずれる。
+  sessionStorageに保存してタイミングで消す。
+  sessionStorageにあるときは優先してそっち
+  消すタイミング
+  - 並び替え前。 dnd hook
+  - open menu
+  - add mode
+  - before add tasks
+  - listen order
+
+
+
 4週ケア
 
 

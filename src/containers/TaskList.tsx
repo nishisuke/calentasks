@@ -46,13 +46,7 @@ export const TaskList: FC<P> = ({
   const onBeforeDragStart = useCallback(() => {}, [])
   const onDragStart = useCallback(() => {}, [])
 
-  const filtered: Task[] = order.reduce(
-    (acc: Task[], o: IKey) => [...acc, ...o.filterTasks(tasks)],
-    []
-  )
-  const errored = tasks.filter((i) => !filtered.find((a) => a.id === i.id))
-
-  const disableDrag = doingDone || a || errored.length !== 0
+  const disableDrag = doingDone || a
 
   return (
     <DragDropContext
@@ -131,34 +125,6 @@ export const TaskList: FC<P> = ({
                   </Draggable>
                 )
               }
-            })}
-            {errored.map((h, i) => {
-              return (
-                <Draggable
-                  isDragDisabled={true}
-                  key={h.id}
-                  draggableId={h.id}
-                  index={i + filtered.length}
-                >
-                  {(provided: DraggableProvided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className="boxdrag"
-                    >
-                      <Item
-                        className="taskdate"
-                        setDoingDone={sa}
-                        key={h.id}
-                        task={h}
-                        done={done}
-                        disableDone={b}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              )
             })}
             {provided.placeholder}
           </div>

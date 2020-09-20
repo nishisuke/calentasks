@@ -12,6 +12,13 @@ interface P {
 export const MenuContent: FC<P> = ({ user }) => {
   const [dones, set] = useState<Task[]>([])
 
+  // TODO: show errored
+  //  const filtered: Task[] = order.reduce(
+  //    (acc: Task[], o: IKey) => [...acc, ...o.filterTasks(tasks)],
+  //    []
+  //  )
+  //  const errored = tasks.filter((i) => !filtered.find((a) => a.id === i.id))
+
   useEffect(() => {
     firebase
       .firestore()

@@ -31,7 +31,6 @@ export const bbb = (
     revIn === -1 ? null : dateOrder.length - revIn - 1
 
   if (!date) {
-    console.log('order', 'no date', beforeTodayIndex)
     if (beforeTodayIndex !== null) {
       return beforeTodayIndex + 1
     } else {
@@ -40,16 +39,12 @@ export const bbb = (
   }
 
   if (order.findIndex((b) => b.ts === date.ts) !== -1) {
-    console.log('order', 'dateex')
     return null
   }
-  console.log('order', 'datenotex')
 
   if (date.ts > tod) {
     // OK
-    console.log(dateOrder, date.ts)
     const plu = dateOrder.findIndex((k) => k && k > date.ts)
-    console.log('order', 'dateaftoday', plu)
     if (plu > -1) {
       return plu
     } else {
@@ -58,12 +53,10 @@ export const bbb = (
   }
   // today or 過去
   if (beforeTodayIndex === null) {
-    console.log('order', 'datebetodayunex')
     return 0
   }
   const beforeval = order[beforeTodayIndex]
   const beforets = beforeval.ts!
-  console.log('order', 'datebetodayex', beforets)
   if (date.ts < beforets) {
     const findin = dateOrder.findIndex((ts) => ts && ts > date.ts)
     return findin
@@ -248,7 +241,6 @@ export const useTask = (user: AuthedUser) => {
       if (!sfDoc.exists) {
         throw 'Document does not exist!'
       }
-      console.log()
       if (
         sfDoc.data()!.keysInOrder.join() !==
         order.map((i) => (i.ts ? parseInt(i.key, 10) : i.key)).join()

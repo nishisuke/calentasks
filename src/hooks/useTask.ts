@@ -182,10 +182,28 @@ export const useTask = (user: AuthedUser) => {
   }
 
   const setO = (a: number, b: number) => {
+    const newOrder = reorder(order, a, b)
     setFoo((be) => ({
       ...be,
-      order: reorder(order, a, b),
+      order: newOrder,
     }))
+    const db = firebase.firestore()
+    const orderDoc = db.collection('order').doc(user.uid)
+
+    // TODO: error
+    db.runTransaction(async (transaction) => {
+      const sfDoc = await transaction.get(orderDoc)
+      if (!sfDoc.exists) {
+        throw 'Document does not exist!'
+      }
+      if (sfDoc.data()!.keysInOrder.join() !== newOrder.join()) {
+        throw 'change'
+      }
+
+      transaction.set(orderDoc, {
+        keysInOrder: newOrder.map((i) => (i.ts ? parseInt(i.key, 10) : i.key)),
+      })
+    })
   }
 
   useEffect(() => {

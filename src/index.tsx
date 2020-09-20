@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { FC, useEffect, useContext, useState } from 'react'
 import { render } from 'react-dom'
 
 // Side effects
@@ -6,65 +6,64 @@ import 'src/libs/initFirebase'
 import 'firebase/auth'
 import 'firebase/firestore'
 
-import { Layout } from 'src/Layout'
-import { CalendarContext, Calendar } from 'src/contexts/calendar'
-import { VisibilityProvider } from 'src/contexts/visibility'
+import { CalendarProvider, CalendarContext } from 'src/contexts/calendar'
+import { VisibilityContext, VisibilityProvider } from 'src/contexts/visibility'
 import { useAuth } from 'src/hooks/useAuth'
+import { Layout } from 'src/Layout'
 import { ScreenA } from 'src/screens/ScreenA'
 import { SignIn } from 'src/containers/SignIn'
-import { MenuContent } from 'src/components/MenuContent'
+import { Month } from 'src/components/Month'
+import { CalendarDate } from 'src/entities/CalendarDate'
 
 import 'src/static/style.scss'
 
-const getTodayPage = (now: Date): number => {
-  const prevCount = new Date(now.getFullYear(), now.getMonth(), 1).getDay()
-  return now.getDate() + prevCount > 35 ? 1 : 0
+interface PP {
+  num: number
 }
-
+const EmptyCal: FC<PP> = ({ num }) => {
+  return (
+    <div style={{ height: 310, display: 'flex', flexFlow: 'column nowrap' }}>
+      <Month
+        startDate={new CalendarDate(new Date().getFullYear(), num, 1)}
+        handleDate={() => {}}
+        tasks={[]}
+      />
+    </div>
+  )
+}
 const App = () => {
+  const { visible } = useContext(VisibilityContext)
+  const { syncTime, calendar } = useContext(CalendarContext)
   const auth = useAuth()
-  const now = new Date()
-  const [calendar, setCalendar] = useState<Calendar>({
-    currentIndex: getTodayPage(now),
-    thisMonth: now.getMonth() + 1,
-  })
 
-  // const dev = {uid: 'hogehoge'}
-  // const auth = {
-  //   loaded: true,
-  //   user: dev,
-  // }
-  if (!auth.loaded) {
-    return (
-      <VisibilityProvider>
-        <CalendarContext.Provider value={{ calendar, setCalendar }}>
-          <Layout loading={true} page={<></>} menu={<></>} />
-        </CalendarContext.Provider>
-      </VisibilityProvider>
-    )
-  } else if (!auth.user) {
-    return (
-      <VisibilityProvider>
-        <SignIn />
-      </VisibilityProvider>
-    )
-  } else if (auth.user) {
-    const page = <ScreenA user={auth.user} />
+  useEffect(() => {
+    if (visible) {
+      syncTime()
+    }
+  }, [visible])
 
-    return (
-      <VisibilityProvider>
-        <CalendarContext.Provider value={{ calendar, setCalendar }}>
-          <Layout
-            loading={false}
-            page={page}
-            menu={<MenuContent user={auth.user} />}
-          />
-        </CalendarContext.Provider>
-      </VisibilityProvider>
-    )
-  } else {
-    throw new Error('Fail')
-  }
+  const num = ((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1
+  const page = !auth.loaded ? (
+    <EmptyCal num={num} />
+  ) : auth.user ? (
+    <ScreenA user={auth.user} />
+  ) : (
+    <>
+      <EmptyCal num={num} />
+      <SignIn />
+    </>
+  )
+  const showMenu = !(auth.loaded && !auth.user)
+  return (
+    <Layout num={num} loading={!auth.loaded} page={page} showMenu={showMenu} />
+  )
 }
 
-render(<App />, document.getElementById('app'))
+render(
+  <VisibilityProvider>
+    <CalendarProvider>
+      <App />
+    </CalendarProvider>
+  </VisibilityProvider>,
+  document.getElementById('app')
+)

@@ -1,15 +1,15 @@
 import React, { ReactNode, FC, useContext, useEffect, useState } from 'react'
-import { CalendarContext } from 'src/contexts/calendar'
 // @ts-ignore
 import ScrollOut from 'scroll-out'
+import { MenuContent } from 'src/components/MenuContent'
 
 interface Props {
   page: ReactNode
-  menu: ReactNode
   loading: boolean
+  showMenu: boolean
+  num: number
 }
 interface MP {
-  hero: number
   num: number
   icon: ReactNode
 }
@@ -29,51 +29,34 @@ const MI: FC<IP> = ({ click, open }) => (
   </span>
 )
 
-const Header: FC<MP> = ({ num, hero, icon }) => {
+const hero = 40
+const Header: FC<MP> = ({ num, icon }) => {
   return (
-    <div data-scroll className="myheader" style={{ height: `${hero}px` }}>
+    <div data-scroll className="myheader" style={{ height: hero }}>
       {icon}
       <span className="monthlabel">{num}月</span>
     </div>
   )
 }
 
-import { VisibilityContext } from 'src/contexts/visibility'
-export const Layout: FC<Props> = ({ menu, page, loading }) => {
+export const Layout: FC<Props> = ({ num, showMenu, page, loading }) => {
   const [menuopen, setMenuopen] = useState(false)
-  const { calendar } = useContext(CalendarContext)
-  const { visible } = useContext(VisibilityContext)
-  const hero = 40
-
-  useEffect(() => {
-    let cb = () => {}
-    if (!menuopen && !loading && visible) {
-      const so = ScrollOut({
-        offset: hero,
-        cssProps: {
-          visibleY: true,
-        },
-      })
-      cb = so.teardown
-    }
-
-    return cb
-  }, [menuopen, loading, visible])
 
   return (
     <>
       <Header
-        hero={hero}
-        num={((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1}
+        num={num}
         icon={
           loading ? (
             <LI />
-          ) : (
+          ) : showMenu ? (
             <MI open={menuopen} click={() => setMenuopen(!menuopen)} />
+          ) : (
+            <div style={{ width: 37 }}></div>
           )
         }
       />
-      {menuopen && menu}
+      {menuopen && <MenuContent />}
       {!menuopen && page}
     </>
   )

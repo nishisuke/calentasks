@@ -9,7 +9,9 @@ export const VisibilityContext = createContext<Props>({
 })
 
 // @ts-ignore
-var hidden, visibilityChange
+let hidden: string | undefined = undefined
+let visibilityChange: string | undefined = undefined
+
 // @ts-ignore
 if (typeof document.hidden !== 'undefined') {
   // Opera 12.10 and Firefox 18 and later support
@@ -27,11 +29,12 @@ if (typeof document.hidden !== 'undefined') {
 
 export const VisibilityProvider: FC = ({ children }) => {
   const [value, set] = useState({ visible: true })
-  useEffect(() => {
-    const handleVisibilityChange = (e: any) => {
-      set({ visible: e.target.visibilityState === 'visible' })
-    }
+  const handleVisibilityChange = (e: any) => {
+    set({ visible: e.target.visibilityState === 'visible' })
+  }
 
+  useEffect(() => {
+    let cb = () => {}
     if (
       !(
         // @ts-ignore
@@ -44,7 +47,15 @@ export const VisibilityProvider: FC = ({ children }) => {
     ) {
       // @ts-ignore
       document.addEventListener(visibilityChange, handleVisibilityChange, false)
+      // @ts-ignore
+      cb = () =>
+        document.removeEventListener(
+          visibilityChange,
+          handleVisibilityChange,
+          false
+        )
     }
+    return cb
   }, [])
   return (
     <VisibilityContext.Provider value={value}>

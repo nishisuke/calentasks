@@ -1,4 +1,13 @@
-import React, { ReactNode, FC, useEffect, useState, useRef } from 'react'
+import React, {
+  ReactNode,
+  FC,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from 'react'
+// @ts-ignore
+import ScrollOut from 'scroll-out'
 
 import { Calendar } from 'src/containers/Calendar'
 import { TaskList } from 'src/containers/TaskList'
@@ -11,6 +20,7 @@ import { useTask } from 'src/hooks/useTask'
 import { CalendarDate } from 'src/entities/CalendarDate'
 import { IKey } from 'src/entities/TaskKey'
 
+import { VisibilityContext } from 'src/contexts/visibility'
 import { ScrollOutSticky } from 'src/components/ScrollOutSticky'
 
 interface FP {
@@ -18,6 +28,7 @@ interface FP {
   adding?: boolean
 }
 
+const hero = 40
 const FAB: FC<FP> = ({ onClick, children, adding }) => (
   <button
     onClick={onClick}
@@ -35,6 +46,7 @@ interface P {
 }
 
 export const ScreenA: FC<P> = ({ user }) => {
+  const { visible } = useContext(VisibilityContext)
   const [animTrigger, setAnimTrigger] = useState({
     in: false,
     title: '',
@@ -53,6 +65,21 @@ export const ScreenA: FC<P> = ({ user }) => {
     order,
     todos: tasks,
   } = useTask(user)
+
+  useEffect(() => {
+    let cb = () => {}
+    if (visible) {
+      const so = ScrollOut({
+        offset: hero,
+        cssProps: {
+          visibleY: true,
+        },
+      })
+      cb = so.teardown
+    }
+
+    return cb
+  }, [visible])
 
   useEffect(() => {
     if (addMode) inputRef.current?.focus()

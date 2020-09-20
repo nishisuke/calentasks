@@ -4,12 +4,13 @@ import firebase from 'firebase/app'
 import { Task } from 'src/types/Task'
 import { signOut } from 'src/services/authService'
 import { AuthedUser } from 'src/types/AuthedUser'
+import { useAuth } from 'src/hooks/useAuth'
 
-interface P {
-  user: AuthedUser
-}
+interface P {}
 
-export const MenuContent: FC<P> = ({ user }) => {
+export const MenuContent: FC<P> = ({}) => {
+  const auth = useAuth()
+  const { user } = auth
   const [dones, set] = useState<Task[]>([])
 
   // TODO: show errored
@@ -20,6 +21,7 @@ export const MenuContent: FC<P> = ({ user }) => {
   //  const errored = tasks.filter((i) => !filtered.find((a) => a.id === i.id))
 
   useEffect(() => {
+    if (!user) return
     firebase
       .firestore()
       .collection('tasks')
@@ -40,7 +42,7 @@ export const MenuContent: FC<P> = ({ user }) => {
         set(arr)
       })
     // TODO: catch
-  }, [])
+  }, [user])
 
   return (
     <>

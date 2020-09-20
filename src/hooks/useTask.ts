@@ -71,7 +71,7 @@ interface V {
   order: IKey[]
   todos: Task[]
 }
-export const useTask = (user: AuthedUser) => {
+export const useTask = (user: AuthedUser, visible: boolean) => {
   const [foo, setFoo] = useState<V>({ order: [], todos: [] })
   const { todos, order } = foo
 
@@ -215,6 +215,7 @@ export const useTask = (user: AuthedUser) => {
   }
 
   useEffect(() => {
+    if (!visible) return () => {}
     // TODO: listen error
     let o = () => {}
     let un = () => {}
@@ -260,7 +261,7 @@ export const useTask = (user: AuthedUser) => {
       o()
       un()
     }
-  }, [])
+  }, [visible])
 
   return {
     addTask,

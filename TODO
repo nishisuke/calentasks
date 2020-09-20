@@ -1,14 +1,3 @@
-tmpLocalOrderでずれる。
-  sessionStorageに保存してタイミングで消す。
-  sessionStorageにあるときは優先してそっち
-  消すタイミング
-  - 並び替え前。 dnd hook
-  - open menu
-  - add mode
-  - before add tasks
-  - listen order
-
-
 visibleでfirestore connection on off
 update now date
 4週ケア

@@ -5,6 +5,7 @@ import { AuthedUser } from 'src/types/AuthedUser'
 import firebase from 'firebase/app'
 import { CalendarDate } from 'src/entities/CalendarDate'
 import { IKey, getKey } from 'src/entities/TaskKey'
+import { encodeOrder, decodeOrder } from 'src/encodings/order'
 
 const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
   const result: T[] = [...list]
@@ -65,6 +66,7 @@ export const bbb = (
   }
 }
 
+const db = firebase.firestore()
 interface V {
   order: IKey[]
   todos: Task[]
@@ -86,7 +88,6 @@ export const useTask = (user: AuthedUser) => {
     if (!title) return '入力してください'
     setAdding(true)
     try {
-      const db = firebase.firestore()
       const doc = db.collection('tasks').doc()
       const added = Date.now()
       const ob = {
@@ -104,24 +105,7 @@ export const useTask = (user: AuthedUser) => {
           if (!sfDoc.exists) {
             throw 'Document does not exist!'
           }
-          const latestOrder = sfDoc
-            .data()!
-            .keysInOrder.map((b: string | number) => {
-              if (typeof b === 'number') {
-                const mod = b % 10000
-                return getKey(
-                  new CalendarDate(
-                    Math.floor(b / 10000),
-                    Math.floor(mod / 100),
-                    mod % 100
-                  )
-                )
-              } else if (typeof b === 'string') {
-                return getKey(b)
-              } else {
-                throw new Error('No type')
-              }
-            })
+          const latestOrder = sfDoc.data()!.keysInOrder.map(decodeOrder)
 
           const inde = bbb(latestOrder, date)
           const keysInOrder = [...latestOrder]
@@ -131,9 +115,7 @@ export const useTask = (user: AuthedUser) => {
 
           await transaction.set(doc, ob)
           await transaction.set(orderDoc, {
-            keysInOrder: keysInOrder.map((i) =>
-              i.ts ? parseInt(i.key, 10) : i.key
-            ),
+            keysInOrder: keysInOrder.map(encodeOrder),
           })
           return [{ ...ob, id: doc.id, date: date?.ts }, keysInOrder]
         }
@@ -157,7 +139,6 @@ export const useTask = (user: AuthedUser) => {
   const toggle = async (t: Task) => {
     setDoingDone(true)
     try {
-      const db = firebase.firestore()
       const doc = firebase.firestore().collection('tasks').doc(t.id)
       const upda = { done: true, doneAt: Date.now() }
       const orderDoc = db.collection('order').doc(user.uid)
@@ -167,44 +148,29 @@ export const useTask = (user: AuthedUser) => {
         if (!sfDoc.exists) {
           throw 'Document does not exist!'
         }
-        const latestOrder = sfDoc
-          .data()!
-          .keysInOrder.map((b: string | number) => {
-            if (typeof b === 'number') {
-              const mod = b % 10000
-              return getKey(
-                new CalendarDate(
-                  Math.floor(b / 10000),
-                  Math.floor(mod / 100),
-                  mod % 100
-                )
-              )
-            } else if (typeof b === 'string') {
-              return getKey(b)
-            } else {
-              throw new Error('No type')
-            }
-          })
+        const latestOrder = sfDoc.data()!.keysInOrder.map(decodeOrder)
+        if (
+          sfDoc.data()!.keysInOrder.join() !== order.map(encodeOrder).join()
+        ) {
+          throw 'change'
+        }
 
         let keysInOrder = [...latestOrder]
-        let tmpLocalOrder = [...latestOrder]
         if (t.date) {
-          if (todos.filter((l) => l.date === t.date).length === 1) {
+          const shouldDeleteDate =
+            todos.filter((l) => l.date === t.date).length === 1
+          if (shouldDeleteDate) {
             keysInOrder = keysInOrder.filter((b) => b.ts !== t.date)
-            // NOTE: dbだけdate消す
           }
         } else {
           keysInOrder = keysInOrder.filter((b) => b.key !== t.id)
-          tmpLocalOrder = [...keysInOrder]
         }
 
         await transaction.update(doc, upda)
         await transaction.set(orderDoc, {
-          keysInOrder: keysInOrder.map((i) =>
-            i.ts ? parseInt(i.key, 10) : i.key
-          ),
+          keysInOrder: keysInOrder.map(encodeOrder),
         })
-        return tmpLocalOrder
+        return keysInOrder
       })
 
       const tar: Task = todos.find((e) => e.id === t.id)!
@@ -229,11 +195,8 @@ export const useTask = (user: AuthedUser) => {
       ...be,
       order: newOrder,
     }))
-    const db = firebase.firestore()
     const orderDoc = db.collection('order').doc(user.uid)
-    const keysInOrder = newOrder.map((i) =>
-      i.ts ? parseInt(i.key, 10) : i.key
-    )
+    const keysInOrder = newOrder.map(encodeOrder)
 
     // TODO: error
     db.runTransaction(async (transaction) => {
@@ -241,10 +204,7 @@ export const useTask = (user: AuthedUser) => {
       if (!sfDoc.exists) {
         throw 'Document does not exist!'
       }
-      if (
-        sfDoc.data()!.keysInOrder.join() !==
-        order.map((i) => (i.ts ? parseInt(i.key, 10) : i.key)).join()
-      ) {
+      if (sfDoc.data()!.keysInOrder.join() !== order.map(encodeOrder).join()) {
         throw 'change'
       }
 
@@ -287,22 +247,7 @@ export const useTask = (user: AuthedUser) => {
         let ord: IKey[] = []
         const d = doc.data()
         if (doc.exists && d) {
-          ord = d.keysInOrder.map((b: string | number) => {
-            if (typeof b === 'number') {
-              const mod = b % 10000
-              return getKey(
-                new CalendarDate(
-                  Math.floor(b / 10000),
-                  Math.floor(mod / 100),
-                  mod % 100
-                )
-              )
-            } else if (typeof b === 'string') {
-              return getKey(b)
-            } else {
-              throw new Error('No type')
-            }
-          })
+          ord = d.keysInOrder.map(decodeOrder)
         }
 
         setFoo((b) => ({

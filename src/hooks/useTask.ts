@@ -189,33 +189,39 @@ export const useTask = (user: AuthedUser) => {
   }
 
   useEffect(() => {
-    const tasks: Promise<Task[]> = firebase
+    // TODO: listen error
+    let o = () => {}
+    let un = () => {}
+    un = firebase
       .firestore()
       .collection('tasks')
       .where('userID', '==', user.uid)
       .where('done', '==', false)
-      .get()
-      .then(function (querySnapshot: any) {
-        const arr: Task[] = []
-        querySnapshot.forEach(function (doc: any) {
+      .onSnapshot(function (snapshot) {
+        // @ts-ignore
+        const tasks: Task[] = snapshot.docs.map((doc) => {
           const data = doc.data()
-          arr.push({
+          return {
             ...data,
             id: doc.id,
             date: data?.date || undefined,
-          })
+          }
         })
-        return arr
+        setFoo((b) => ({
+          ...b,
+          todos: tasks,
+        }))
       })
 
-    const o: Promise<IKey[]> = firebase
+    o = firebase
       .firestore()
       .collection('order')
       .doc(user.uid)
-      .get()
-      .then((doc: any) => {
-        if (doc.exists) {
-          return doc.data().keysInOrder.map((b: string | number) => {
+      .onSnapshot(function (doc) {
+        let ord: IKey[] = []
+        const d = doc.data()
+        if (doc.exists && d) {
+          ord = d.keysInOrder.map((b: string | number) => {
             if (typeof b === 'number') {
               const mod = b % 10000
               return getKey(
@@ -231,19 +237,18 @@ export const useTask = (user: AuthedUser) => {
               throw new Error('No type')
             }
           })
-        } else {
-          return []
         }
+
+        setFoo((b) => ({
+          ...b,
+          order: ord,
+        }))
       })
 
-    Promise.all([tasks, o])
-      .then(([todos, order]) =>
-        setFoo({
-          todos,
-          order,
-        })
-      )
-      .catch((e: Error) => console.error(e))
+    return () => {
+      o()
+      un()
+    }
   }, [])
 
   return {

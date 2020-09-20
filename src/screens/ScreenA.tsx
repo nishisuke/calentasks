@@ -93,13 +93,6 @@ export const ScreenA: FC<P> = ({ user }) => {
       setAddMode(false)
     }
   }
-
-  const filtered: Task[] = order.reduce(
-    (acc: Task[], o: IKey) => [...acc, ...o.filterTasks(tasks)],
-    []
-  )
-
-  if (filtered.length !== tasks.length) alert('Something fail')
   return (
     <>
       <ScrollOutSticky>

@@ -51,7 +51,7 @@ export const ScreenA: FC<P> = ({ user }) => {
     moveItem,
     toggle,
     order,
-    tasks,
+    todos: tasks,
   } = useTask(user)
 
   useEffect(() => {

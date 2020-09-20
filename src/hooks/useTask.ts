@@ -74,11 +74,11 @@ export const bbb = (
 
 interface V {
   order: IKey[]
-  tasks: Task[]
+  todos: Task[]
 }
 export const useTask = (user: AuthedUser) => {
-  const [foo, setFoo] = useState<V>({ order: [], tasks: [] })
-  const { tasks: dones, order } = foo
+  const [foo, setFoo] = useState<V>({ order: [], todos: [] })
+  const { todos, order } = foo
 
   const [adding, setAdding] = useState(false)
   const [doingDone, setDoingDone] = useState(false)
@@ -123,7 +123,7 @@ export const useTask = (user: AuthedUser) => {
 
       setFoo((b: V) => ({
         ...b,
-        tasks: [...b.tasks, task],
+        todos: [...b.todos, task],
         order: keysInOrder,
       }))
 
@@ -142,7 +142,7 @@ export const useTask = (user: AuthedUser) => {
       let keysInOrder = [...order]
       let tmpLocalOrder = [...order]
       if (t.date) {
-        if (dones.filter((l) => !l.done && l.date === t.date).length === 1) {
+        if (todos.filter((l) => l.date === t.date).length === 1) {
           keysInOrder = keysInOrder.filter((b) => b.ts !== t.date)
           // NOTE: dbだけdate消す
         }
@@ -165,11 +165,11 @@ export const useTask = (user: AuthedUser) => {
         })
       })
 
-      const tar: Task = dones.find((e) => e.id === t.id)!
+      const tar: Task = todos.find((e) => e.id === t.id)!
       const toggled = { ...tar, ...upda }
       setFoo((b) => ({
         ...b,
-        tasks: [...b.tasks.filter((e) => e.id !== t.id), toggled],
+        todos: [...b.todos.filter((e) => e.id !== t.id), toggled],
         order: tmpLocalOrder,
       }))
 
@@ -193,6 +193,7 @@ export const useTask = (user: AuthedUser) => {
       .firestore()
       .collection('tasks')
       .where('userID', '==', user.uid)
+      .where('done', '==', false)
       .get()
       .then(function (querySnapshot: any) {
         const arr: Task[] = []
@@ -236,9 +237,9 @@ export const useTask = (user: AuthedUser) => {
       })
 
     Promise.all([tasks, o])
-      .then(([tasks, order]) =>
+      .then(([todos, order]) =>
         setFoo({
-          tasks,
+          todos,
           order,
         })
       )
@@ -251,8 +252,7 @@ export const useTask = (user: AuthedUser) => {
     toggle,
     adding,
     doingDone,
-    tasks: dones.filter((t) => !t.done),
-    dones: dones.filter((t) => t.done),
+    todos,
     order,
   }
 }

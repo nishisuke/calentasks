@@ -19,8 +19,7 @@ const getWeeks = (startDate: CalendarDate, limit: number) => {
   const dates = times(7 * limit - prevMonthDatesCount).map((_, i) => i)
   const calendarDates = [...prevMonthDates, ...dates]
 
-  const line = Math.min(Math.ceil(calendarDates.length / 7), limit)
-  return times(line).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
+  return times(limit).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
 }
 
 export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {

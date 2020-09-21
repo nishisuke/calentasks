@@ -39,7 +39,7 @@ module.exports = {
     ],
   },
   optimization: {
-    minimize: true,
+    minimize: !devMode,
     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
   },
   output: {

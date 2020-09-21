@@ -7,6 +7,7 @@ import {
 } from 'react-beautiful-dnd'
 
 import { IKey } from 'src/entities/TaskKey'
+import { CalendarDate } from 'src/entities/CalendarDate'
 import { Task } from 'src/types/Task'
 import { Item } from 'src/components/Task'
 
@@ -48,6 +49,9 @@ export const TaskList: FC<P> = ({
 
   const disableDrag = doingDone || a
 
+  const fs = order
+    .map((keystr) => keystr.filterTasks(tasks))
+    .filter((a) => a.length)
   return (
     <DragDropContext
       onBeforeCapture={onBeforeCapture}
@@ -62,10 +66,15 @@ export const TaskList: FC<P> = ({
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
-            {order.map((keystr, i) => {
-              if (keystr.ts !== null) {
-                const idDrag = keystr.key
-                const ts = keystr.filterTasks(tasks)
+            {fs.map((ts, i) => {
+              if (ts[0].date) {
+                const d = new Date(ts[0].date)
+                const cald = new CalendarDate(
+                  d.getFullYear(),
+                  d.getMonth() + 1,
+                  d.getDate()
+                )
+                const idDrag = cald.key
                 return (
                   <Draggable
                     isDragDisabled={true}
@@ -80,7 +89,7 @@ export const TaskList: FC<P> = ({
                         {...provided.dragHandleProps}
                       >
                         <div className="datetitle has-text-grey-light">
-                          {keystr.key.slice(4, 6)}/{keystr.key.slice(6)}
+                          {cald.key.slice(4, 6)}/{cald.key.slice(6)}
                         </div>
                         {ts.map((h) => (
                           <Item
@@ -97,13 +106,12 @@ export const TaskList: FC<P> = ({
                   </Draggable>
                 )
               } else {
-                const id = keystr.key
-                const task = keystr.filterTasks(tasks)[0]
+                const task = ts[0]
                 return (
                   <Draggable
                     isDragDisabled={disableDrag}
-                    key={id}
-                    draggableId={id}
+                    key={task.id}
+                    draggableId={task.id}
                     index={i}
                   >
                     {(provided: DraggableProvided) => (

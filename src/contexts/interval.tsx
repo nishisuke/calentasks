@@ -12,7 +12,7 @@ export const IntervalProvider: FC = ({ children }) => {
   const [value, set] = useState({ updatedAt: 0 })
 
   useEffect(() => {
-    const id = setInterval(() => set({ updatedAt: Date.now() }), 3000)
+    const id = setInterval(() => set({ updatedAt: Date.now() }), 30 * 60 * 1000)
     return () => clearInterval(id)
   }, [])
 

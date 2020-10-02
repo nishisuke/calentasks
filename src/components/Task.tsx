@@ -45,7 +45,7 @@ export const Item: FC<I> = ({
           </span>
         )}
         {!disableDone && s && (
-          <span onClick={click} className="donearea">
+          <span className="donearea">
             <i className="fas fa-check" />
           </span>
         )}

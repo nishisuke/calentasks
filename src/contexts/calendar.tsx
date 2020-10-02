@@ -5,9 +5,10 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react'
+import { CalendarDate } from 'src/entities/CalendarDate'
 
 export interface Calendar {
-  thisMonth: number
+  currentDate: CalendarDate
   currentIndex: number
 }
 interface CalendarProps {
@@ -17,7 +18,7 @@ interface CalendarProps {
 }
 
 export const CalendarContext = createContext<CalendarProps>({
-  calendar: { thisMonth: 1, currentIndex: 1 },
+  calendar: { currentDate: new CalendarDate(2020, 1, 1), currentIndex: 1 },
   setCalendar: () => {},
   syncTime: () => {},
 })
@@ -31,7 +32,11 @@ const getCal = () => {
   const now = new Date()
   return {
     currentIndex: getTodayPage(now),
-    thisMonth: now.getMonth() + 1,
+    currentDate: new CalendarDate(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate()
+    ),
   }
 }
 

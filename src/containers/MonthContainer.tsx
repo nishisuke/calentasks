@@ -13,9 +13,8 @@ interface P {
 
 export const MonthContainer: FC<P> = ({ index, handleDate, tasks }) => {
   const {
-    calendar: { thisMonth },
+    calendar: { currentDate },
   } = useContext(CalendarContext)
-  const thisYear = new Date().getFullYear()
-  const startDate = new CalendarDate(thisYear, index + thisMonth, 1)
+  const startDate = new CalendarDate(currentDate.y, index + currentDate.m, 1)
   return <Month tasks={tasks} handleDate={handleDate} startDate={startDate} />
 }

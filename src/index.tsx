@@ -19,16 +19,12 @@ import { CalendarDate } from 'src/entities/CalendarDate'
 import 'src/static/style.scss'
 
 interface PP {
-  num: number
+  num: CalendarDate
 }
 const EmptyCal: FC<PP> = ({ num }) => {
   return (
     <div style={{ height: 310, display: 'flex', flexFlow: 'column nowrap' }}>
-      <Month
-        startDate={new CalendarDate(new Date().getFullYear(), num, 1)}
-        handleDate={() => {}}
-        tasks={[]}
-      />
+      <Month startDate={num} handleDate={() => {}} tasks={[]} />
     </div>
   )
 }
@@ -44,7 +40,11 @@ const App = () => {
     }
   }, [visible, updatedAt])
 
-  const num = ((calendar.thisMonth + calendar.currentIndex - 1) % 12) + 1
+  const num = new CalendarDate(
+    calendar.currentDate.y,
+    calendar.currentDate.m + calendar.currentIndex,
+    1
+  )
   const page = !auth.loaded ? (
     <EmptyCal num={num} />
   ) : auth.user ? (
@@ -57,7 +57,12 @@ const App = () => {
   )
   const showMenu = !(auth.loaded && !auth.user)
   return (
-    <Layout num={num} loading={!auth.loaded} page={page} showMenu={showMenu} />
+    <Layout
+      num={num.m}
+      loading={!auth.loaded}
+      page={page}
+      showMenu={showMenu}
+    />
   )
 }
 

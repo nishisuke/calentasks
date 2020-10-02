@@ -6,10 +6,6 @@ import { Task } from 'src/types/Task'
 import SwipeableViews from 'react-swipeable-views'
 import { virtualize } from 'react-swipeable-views-utils'
 
-const array = [0, 0, 0] // must be 3以上の奇数
-const loopSwipeDirection = (be: number, af: number) => {
-  return af - be
-}
 interface P {
   handleDate?: (cald: CalendarDate) => void
   tasks: Task[]
@@ -34,7 +30,6 @@ export const Calendar: FC<P> = ({ handleDate, tasks }) => {
         handleDate={index === calendar.currentIndex ? handleDate : undefined}
         key={key}
         index={index}
-        pages={array.length}
       />
     )
   }

@@ -9,6 +9,7 @@ interface I {
   disableDone: boolean
   setDoingDone: (s: boolean) => void
   className: string
+  handle: any
 }
 
 // This is undone
@@ -18,6 +19,7 @@ export const Item: FC<I> = ({
   done,
   disableDone,
   setDoingDone,
+  handle,
 }) => {
   const [s, sb] = useState(false)
   const click = () => {
@@ -50,7 +52,9 @@ export const Item: FC<I> = ({
           </span>
         )}
         {disableDone && <span className="donearea empty" />}
-        <span className="tasktitle">{task.title}</span>
+        <span {...handle} className="tasktitle">
+          {task.title}
+        </span>
       </div>
     </CSSTransition>
   )

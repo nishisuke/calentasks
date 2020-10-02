@@ -83,16 +83,13 @@ export const TaskList: FC<P> = ({
                     index={i}
                   >
                     {(provided: DraggableProvided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
                         <div className="datetitle has-text-grey-light">
                           {cald.key.slice(4, 6)}/{cald.key.slice(6)}
                         </div>
                         {ts.map((h) => (
                           <Item
+                            handle={{ ...provided.dragHandleProps }}
                             className="taskdate"
                             setDoingDone={sa}
                             key={h.id}
@@ -118,10 +115,10 @@ export const TaskList: FC<P> = ({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        {...provided.dragHandleProps}
                         className="boxdrag"
                       >
                         <Item
+                          handle={{ ...provided.dragHandleProps }}
                           className="box"
                           setDoingDone={sa}
                           disableDone={b}

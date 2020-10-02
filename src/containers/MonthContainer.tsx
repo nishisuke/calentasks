@@ -16,5 +16,12 @@ export const MonthContainer: FC<P> = ({ index, handleDate, tasks }) => {
     calendar: { currentDate },
   } = useContext(CalendarContext)
   const startDate = new CalendarDate(currentDate.y, index + currentDate.m, 1)
-  return <Month tasks={tasks} handleDate={handleDate} startDate={startDate} />
+  return (
+    <Month
+      current={currentDate}
+      tasks={tasks}
+      handleDate={handleDate}
+      startDate={startDate}
+    />
+  )
 }

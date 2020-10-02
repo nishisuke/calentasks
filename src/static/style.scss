@@ -37,6 +37,10 @@ $pink: #FA7C91;
   padding: 1px;
   flex: 1;
   max-width: calc(100% / 7);
+
+  &.now {
+  background-color: $beige-light;
+  }
 }
 .task {
   height: 24px;

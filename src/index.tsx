@@ -20,11 +20,17 @@ import 'src/static/style.scss'
 
 interface PP {
   num: CalendarDate
+  current: CalendarDate
 }
-const EmptyCal: FC<PP> = ({ num }) => {
+const EmptyCal: FC<PP> = ({ num, current }) => {
   return (
     <div style={{ height: 310, display: 'flex', flexFlow: 'column nowrap' }}>
-      <Month startDate={num} handleDate={() => {}} tasks={[]} />
+      <Month
+        startDate={num}
+        handleDate={() => {}}
+        tasks={[]}
+        current={current}
+      />
     </div>
   )
 }
@@ -46,12 +52,12 @@ const App = () => {
     1
   )
   const page = !auth.loaded ? (
-    <EmptyCal num={num} />
+    <EmptyCal num={num} current={calendar.currentDate} />
   ) : auth.user ? (
     <ScreenA user={auth.user} />
   ) : (
     <>
-      <EmptyCal num={num} />
+      <EmptyCal num={num} current={calendar.currentDate} />
       <SignIn />
     </>
   )

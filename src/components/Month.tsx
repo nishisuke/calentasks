@@ -4,6 +4,7 @@ import { Task } from 'src/types/Task'
 
 interface M {
   startDate: CalendarDate
+  current: CalendarDate
   handleDate?: (cal: CalendarDate) => void
   tasks: Task[]
 }
@@ -22,47 +23,29 @@ const getWeeks = (startDate: CalendarDate, limit: number) => {
   return times(limit).map((_, i) => calendarDates.slice(i * 7, i * 7 + 7))
 }
 
-export const Month: FC<M> = ({ startDate, handleDate, tasks }) => {
+export const Month: FC<M> = ({ current, startDate, handleDate, tasks }) => {
   return (
     <>
       {getWeeks(startDate, 5).map((week, i) => (
         <div className="cal-week" key={i}>
           {week.map((date) => {
-            const dayst = tasks.filter(
-              (t) =>
-                t.date ===
-                new CalendarDate(startDate.y, startDate.m, startDate.d + date)
-                  .ts
+            const cald = new CalendarDate(
+              startDate.y,
+              startDate.m,
+              startDate.d + date
             )
+            const dayst = tasks.filter((t) => t.date === cald.ts)
+            const isToday =
+              current.y === cald.y &&
+              current.m === cald.m &&
+              current.d === cald.d
             return (
               <div
-                onClick={
-                  handleDate
-                    ? () =>
-                        handleDate(
-                          new CalendarDate(
-                            startDate.y,
-                            startDate.m,
-                            startDate.d + date
-                          )
-                        )
-                    : undefined
-                }
-                className="cal-date"
-                key={
-                  new CalendarDate(startDate.y, startDate.m, startDate.d + date)
-                    .d
-                }
+                onClick={handleDate ? () => handleDate(cald) : undefined}
+                className={`cal-date ${isToday ? 'now' : ''}`}
+                key={cald.d}
               >
-                <div className="caldatelabel">
-                  {
-                    new CalendarDate(
-                      startDate.y,
-                      startDate.m,
-                      startDate.d + date
-                    ).d
-                  }
-                </div>
+                <div className="caldatelabel">{cald.d}</div>
                 {dayst.slice(0, 1).map((t) => (
                   <div className="is-size-7 hog" key={t.id}>
                     {t.title}

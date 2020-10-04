@@ -44,8 +44,8 @@ describe('No date', () => {
   test('Has today task', () => {
     const date = '20200909'
     expect(bbb([k(date)], getKey(key), undefined)).toEqual([
-      k(date),
       getKey(key),
+      k(date),
     ])
   })
 })

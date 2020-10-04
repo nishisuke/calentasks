@@ -19,6 +19,9 @@ export const bbb = (
   order: IKey[],
   date: CalendarDate | undefined
 ): number | null => {
+  if (!date) {
+    return 0
+  }
   const dateOrder: (number | null)[] = order.map((st) => st.ts)
   const now = new Date()
   const tod = new Date(
@@ -30,14 +33,6 @@ export const bbb = (
   const revIn: number = [...dateOrder].reverse().findIndex((r) => r && r <= tod)
   const beforeTodayIndex: number | null =
     revIn === -1 ? null : dateOrder.length - revIn - 1
-
-  if (!date) {
-    if (beforeTodayIndex !== null) {
-      return beforeTodayIndex + 1
-    } else {
-      return 0
-    }
-  }
 
   if (order.findIndex((b) => b.ts === date.ts) !== -1) {
     return null
@@ -66,12 +61,12 @@ export const bbb = (
   }
 }
 
-const db = firebase.firestore()
 interface V {
   order: IKey[]
   todos: Task[]
 }
 export const useTask = (user: AuthedUser, visible: boolean) => {
+  const db = firebase.firestore()
   const [foo, setFoo] = useState<V>({ order: [], todos: [] })
   const { todos, order } = foo
 

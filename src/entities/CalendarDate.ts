@@ -1,3 +1,5 @@
+import * as holiday_jp from '@holiday-jp/holiday_jp'
+
 export class CalendarDate {
   y: number
   m: number
@@ -20,5 +22,9 @@ export class CalendarDate {
 
   get date(): Date {
     return new Date(this.y, this.m - 1, this.d)
+  }
+
+  get isHoliday(): boolean {
+    return holiday_jp.isHoliday(this.date)
   }
 }

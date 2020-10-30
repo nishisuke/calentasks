@@ -1,5 +1,5 @@
 import React, { ReactNode, FC, useContext, useEffect, useState } from 'react'
-import { CalendarContext } from 'src/contexts/calendar'
+import { getTodayPage, CalendarContext } from 'src/contexts/calendar'
 // @ts-ignore
 import ScrollOut from 'scroll-out'
 import { MenuContent } from 'src/components/MenuContent'
@@ -34,6 +34,11 @@ const hero = 40
 const Header: FC<MP> = ({ num, icon }) => {
   const { calendar, setCalendar } = useContext(CalendarContext)
 
+  const se = (d: number) =>
+    setCalendar((before) => ({
+      ...before,
+      currentIndex: d,
+    }))
   const ch = (diff: number) => {
     setCalendar((before) => ({
       ...before,
@@ -43,7 +48,9 @@ const Header: FC<MP> = ({ num, icon }) => {
   return (
     <div data-scroll className="myheader" style={{ height: hero }}>
       {icon}
-      <span className="monthlabel">{num}月</span>
+      <span onClick={() => se(getTodayPage())} className="monthlabel">
+        {num}月
+      </span>
       <div className="headertail">
         <span className="myiconwrap" onClick={() => ch(-1)}>
           <i className="fas fa-angle-left" />

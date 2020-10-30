@@ -23,15 +23,18 @@ export const CalendarContext = createContext<CalendarProps>({
   syncTime: () => {},
 })
 
-const getTodayPage = (now: Date): number => {
+const getPageFromDate = (now: Date): number => {
   const prevCount = new Date(now.getFullYear(), now.getMonth(), 1).getDay()
   return now.getDate() + prevCount > 35 ? 1 : 0
+}
+export const getTodayPage = (): number => {
+  return getPageFromDate(new Date())
 }
 
 const getCal = () => {
   const now = new Date()
   return {
-    currentIndex: getTodayPage(now),
+    currentIndex: getPageFromDate(now),
     currentDate: new CalendarDate(
       now.getFullYear(),
       now.getMonth() + 1,

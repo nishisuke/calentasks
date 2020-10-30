@@ -42,10 +42,12 @@ export const Month: FC<M> = ({ current, startDate, handleDate, tasks }) => {
             return (
               <div
                 onClick={handleDate ? () => handleDate(cald) : undefined}
-                className={`cal-date ${isToday ? 'now' : ''}`}
+                className={`cal-date ${cald.isHoliday ? 'red' : ''}`}
                 key={cald.d}
               >
-                <div className="caldatelabel">{cald.d}</div>
+                <div className={`caldatelabel ${isToday ? 'now' : ''}`}>
+                  {cald.d}
+                </div>
                 {dayst.slice(0, 1).map((t) => (
                   <div className="is-size-7 hog" key={t.id}>
                     {t.title}

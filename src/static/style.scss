@@ -37,9 +37,12 @@ $pink: #FA7C91;
   padding: 1px;
   flex: 1;
   max-width: calc(100% / 7);
+  align-items: center;
+  flex-flow: column nowrap;
+  display: flex;
 
-  &.now {
-  background-color: $beige-light;
+  &.red {
+    background-color: $pink;
   }
 }
 .task {
@@ -165,6 +168,14 @@ $pink: #FA7C91;
 }
 .caldatelabel {
   text-align: center;
+
+  &.now {
+    background-color: $beige-light;
+    height: 24px;
+    width: 24px;
+    line-height: 24px;
+    border-radius: 12px;
+  }
 }
 .monthlabel {
   margin-left: 8px;

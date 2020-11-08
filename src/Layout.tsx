@@ -48,12 +48,13 @@ const Header: FC<MP> = ({ num, icon }) => {
   return (
     <div data-scroll className="myheader" style={{ height: hero }}>
       {icon}
-      <span onClick={() => se(getTodayPage())} className="monthlabel">
-        {num}月
-      </span>
+      <span className="monthlabel">{num}月</span>
       <div className="headertail">
         <span className="myiconwrap" onClick={() => ch(-1)}>
           <i className="fas fa-angle-left" />
+        </span>
+        <span className="myiconwrap" onClick={() => se(getTodayPage())}>
+          今日
         </span>
         <span className="myiconwrap" onClick={() => ch(1)}>
           <i className="fas fa-angle-right" />

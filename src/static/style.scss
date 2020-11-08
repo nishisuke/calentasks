@@ -191,3 +191,8 @@ $pink: #FA7C91;
   display: flex;
   justify-content: flex-end;
 }
+.menu-content-list {
+  height: 300px;
+  overflow-y: scroll;
+  margin: 20px 0;
+}

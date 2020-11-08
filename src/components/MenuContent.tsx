@@ -46,12 +46,14 @@ export const MenuContent: FC<P> = ({}) => {
 
   return (
     <>
+      <div className="menu-content-list">
+        {dones.map((t) => (
+          <div key={t.id}>{t.title}</div>
+        ))}
+      </div>
       <button onClick={signOut} className="button ">
         sign out
       </button>
-      {dones.map((t) => (
-        <div key={t.id}>{t.title}</div>
-      ))}
     </>
   )
 }

@@ -120,6 +120,11 @@ export const ScreenA: FC<P> = ({ user }) => {
       setAddMode(false)
     }
   }
+
+  const pressEnter = (e: any) => {
+    if (e.key !== 'Enter') return
+    addTask({ title: title, date: d })
+  }
   return (
     <>
       <ScrollOutSticky>
@@ -141,6 +146,7 @@ export const ScreenA: FC<P> = ({ user }) => {
               <input
                 ref={inputRef}
                 onChange={(e) => sett(e.target.value)}
+                onKeyPress={pressEnter}
                 value={title}
                 className="input"
                 type="text"

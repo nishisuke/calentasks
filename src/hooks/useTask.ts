@@ -80,6 +80,7 @@ export const useTask = (user: AuthedUser, visible: boolean) => {
     title: string
     date?: CalendarDate
   }) => {
+    if (adding) return
     if (!title) return '入力してください'
     setAdding(true)
     try {

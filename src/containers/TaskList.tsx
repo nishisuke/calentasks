@@ -19,6 +19,8 @@ interface P {
   doingDone: boolean
 }
 
+const DAY_MSEC = 24 * 3600 * 1000
+
 export const TaskList: FC<P> = ({
   doingDone,
   setOrder,
@@ -48,6 +50,8 @@ export const TaskList: FC<P> = ({
   const onDragStart = useCallback(() => {}, [])
 
   const disableDrag = doingDone || a
+  const now = Date.now()
+  const weekSince = now + 7 * DAY_MSEC
 
   const fs = order
     .map((keystr) => keystr.filterTasks(tasks))
@@ -84,7 +88,13 @@ export const TaskList: FC<P> = ({
                   >
                     {(provided: DraggableProvided) => (
                       <div ref={provided.innerRef} {...provided.draggableProps}>
-                        <div className="datetitle has-text-grey-light">
+                        <div
+                          className={`datetitle ${
+                            d.getTime() < weekSince
+                              ? 'has-text-info'
+                              : 'has-text-grey-light'
+                          } `}
+                        >
                           {cald.key.slice(4, 6)}/{cald.key.slice(6)}
                         </div>
                         {ts.map((h) => (
